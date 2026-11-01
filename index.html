@@ -1,0 +1,3425 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173f35">
+  <title>LINE AI STUDIO | ก๋วยเตี๋ยวโบราณ by เจ๊อ้น</title>
+
+  <!-- External UI libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --green-950: #102d26;
+      --green-900: #173f35;
+      --green-800: #205445;
+      --green-700: #2d6a56;
+      --green-100: #e8f2ed;
+      --ink: #20312c;
+      --muted: #718078;
+      --line: #e5ebe7;
+      --surface: #ffffff;
+      --canvas: #f4f7f5;
+      --danger: #b43e3e;
+      --warning: #946014;
+      --shadow: 0 12px 32px rgba(26, 57, 45, .07);
+      --radius: 14px;
+      --sidebar-width: 264px;
+      --font: "TH Sarabun PSK", "TH Sarabun New", "Sarabun", Tahoma, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 19px;
+      line-height: 1.35;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-shell { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      z-index: 30;
+      color: #eaf2ee;
+      background: var(--green-950);
+      transition: transform .2s ease;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 21px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 12px;
+      color: var(--green-900);
+      background: #dceee3;
+      font-size: 22px;
+    }
+    .brand-title { font-size: 23px; font-weight: 700; line-height: 1; }
+    .brand-subtitle { margin-top: 5px; color: #afc8bb; font-size: 15px; }
+    .nav-scroll { flex: 1; overflow-y: auto; padding: 10px; }
+    .nav-group { margin: 9px 0 16px; }
+    .nav-label {
+      padding: 8px 10px 5px;
+      color: #8fa99d;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+    .nav-link {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 2px 0;
+      padding: 8px 11px;
+      border: 0;
+      border-radius: 9px;
+      color: #d7e5de;
+      background: transparent;
+      text-align: left;
+      font-size: 17px;
+    }
+    .nav-link i { width: 19px; text-align: center; color: #9db8ab; }
+    .nav-link:hover { background: rgba(255,255,255,.08); }
+    .nav-link.active { color: #fff; background: #2d6653; box-shadow: inset 3px 0 #a7d4ba; }
+    .nav-link.active i { color: #d7f1e1; }
+    .sidebar-footer {
+      padding: 13px 18px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: #a9c3b7;
+      font-size: 14px;
+    }
+
+    .main { min-height: 100vh; margin-left: var(--sidebar-width); }
+    .topbar {
+      min-height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 11px 26px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .page-heading { font-size: 25px; font-weight: 700; }
+    .page-subheading { color: var(--muted); font-size: 15px; }
+    .agent-field { width: 140px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; }
+    .connection-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .connection-pill i { color: #26976c; font-size: 9px; }
+    .mobile-menu { display: none !important; }
+    .content { max-width: 1600px; margin: 0 auto; padding: 24px 26px 50px; }
+
+    .page-toolbar, .toolbar-left, .toolbar-right {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+    .page-toolbar { margin-bottom: 16px; }
+    .toolbar-left, .toolbar-right { justify-content: flex-start; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 16px;
+      white-space: nowrap;
+      transition: .15s ease;
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { color: #fff; background: var(--green-800); }
+    .btn-primary:hover { background: var(--green-900); }
+    .btn-secondary { color: var(--ink); border-color: var(--line); background: #fff; }
+    .btn-secondary:hover { background: #f4faf6; border-color: #cbdcd1; }
+    .btn-danger { color: var(--danger); border-color: #f1d3d1; background: #fff5f4; }
+    .btn-small { padding: 4px 9px; font-size: 14px; }
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: #fff;
+    }
+    .icon-btn:hover { color: var(--green-800); background: #f4faf6; }
+    .search-box { position: relative; min-width: 230px; }
+    .search-box i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #87968e; }
+    .search-box input { padding-left: 34px; }
+
+    .grid { display: grid; gap: 15px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .panel, .stat-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 3px 12px rgba(24,55,42,.025);
+    }
+    .panel { padding: 17px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .panel-title { font-size: 21px; font-weight: 700; }
+    .panel-description { color: var(--muted); font-size: 14px; }
+    .stat-card { display: flex; justify-content: space-between; gap: 12px; padding: 17px; }
+    .stat-label { color: var(--muted); font-size: 16px; }
+    .stat-value { margin-top: 4px; font-size: 32px; font-weight: 700; line-height: 1.15; }
+    .stat-icon {
+      width: 43px; height: 43px; display: grid; place-items: center;
+      border-radius: 11px; color: var(--green-800); background: var(--green-100);
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 14px; }
+    .empty { padding: 35px 14px; color: var(--muted); text-align: center; }
+    .empty i { display: block; margin-bottom: 8px; color: #9eada4; font-size: 27px; }
+    .empty strong { display: block; color: var(--ink); font-size: 19px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th, td { padding: 9px 11px; border-bottom: 1px solid #edf1ee; text-align: left; vertical-align: middle; }
+    th { color: #687970; background: #fafcfb; font-size: 14px; white-space: nowrap; }
+    td { font-size: 16px; }
+    tbody tr:hover { background: #fbfdfc; }
+    .table-actions { display: flex; align-items: center; gap: 5px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 99px;
+      color: #536359;
+      background: #eef2ef;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .badge.success { color: #1f7453; background: #e7f5ed; }
+    .badge.warning { color: #946014; background: #fff4df; }
+    .badge.danger { color: #a33939; background: #ffeded; }
+    .badge.info { color: #2e668f; background: #eaf3fa; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #56665d; font-size: 15px; font-weight: 600; }
+    .field input, .field select, .field textarea, .control {
+      width: 100%;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 1px solid #dce5df;
+      border-radius: 8px;
+      outline: none;
+      color: var(--ink);
+      background: #fff;
+    }
+    .field textarea, textarea.control { min-height: 100px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus, .control:focus {
+      border-color: #78a78c;
+      box-shadow: 0 0 0 3px rgba(65,135,97,.1);
+    }
+    .field-help { color: var(--muted); font-size: 13px; }
+    .check-row { display: flex; align-items: center; gap: 8px; color: #58685f; }
+    .check-row input { accent-color: var(--green-700); }
+    .notice {
+      padding: 11px 13px;
+      border: 1px solid #d9e8df;
+      border-radius: 10px;
+      color: #375747;
+      background: #f3f9f5;
+      font-size: 15px;
+    }
+    .notice.warning { border-color: #f0dfc7; color: #83591c; background: #fff8ed; }
+    .divider { height: 1px; margin: 13px 0; background: var(--line); }
+
+    .split-layout { display: grid; grid-template-columns: 320px minmax(0,1fr); gap: 14px; min-height: 560px; }
+    .chat-panel { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .chat-list { max-height: 690px; overflow: auto; }
+    .chat-list-item { display: flex; gap: 10px; padding: 11px; border-bottom: 1px solid #edf1ee; cursor: pointer; }
+    .chat-list-item:hover, .chat-list-item.selected { background: #f2f8f4; }
+    .avatar {
+      width: 40px; height: 40px; display: grid; place-items: center; flex: 0 0 auto;
+      overflow: hidden; border-radius: 50%; color: var(--green-800); background: #e7f0eb;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-list-main { flex: 1; min-width: 0; }
+    .chat-list-top { display: flex; justify-content: space-between; gap: 6px; }
+    .chat-name { overflow: hidden; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-preview { overflow: hidden; color: var(--muted); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-thread { display: flex; flex-direction: column; min-height: 560px; }
+    .chat-thread-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .chat-messages { flex: 1; min-height: 340px; max-height: 540px; padding: 16px; overflow: auto; background: #f8faf8; }
+    .message-row { display: flex; margin: 9px 0; }
+    .message-row.outgoing { justify-content: flex-end; }
+    .bubble {
+      max-width: min(78%,620px); padding: 9px 12px; border: 1px solid #e5ece7;
+      border-radius: 13px; background: #fff; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .message-row.outgoing .bubble { border-color: #d6e8dc; background: #e6f3eb; }
+    .message-meta { margin-top: 4px; color: #7b8981; font-size: 12px; }
+    .chat-composer { padding: 11px; border-top: 1px solid var(--line); background: #fff; }
+    .chat-composer textarea { min-height: 60px; max-height: 150px; }
+    .chat-composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; }
+    .chat-attachment-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:8px 0; }
+    .chat-attachment-toolbar .btn { font-size:14px; }
+    .chat-media-preview { display:block; max-width:min(260px,100%); max-height:260px; border-radius:10px; object-fit:contain; }
+    .chat-file-card { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #d6e8dc; border-radius:10px; background:#f8fcf9; }
+    .chat-file-card i { color:var(--green-700); font-size:24px; }
+    .chat-file-card a { color:var(--green-800); font-weight:700; text-decoration:none; }
+    .chat-flex-card { padding:10px; border:1px solid #d6e8dc; border-radius:10px; background:#f8fcf9; }
+    .menu-option-group { border:1px solid var(--line); border-radius:10px; padding:12px; margin:9px 0; background:#fbfdfb; }
+    .menu-option-group-head { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:8px; }
+    .menu-option-choice { display:grid; grid-template-columns:minmax(0,1fr) auto 105px auto; align-items:center; gap:8px; margin-top:8px; }
+    .menu-option-choice input[type=number] { min-width:0; }
+    .option-toggle { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:14px; white-space:nowrap; }
+    .menu-upload-preview img { width:96px; height:76px; border-radius:9px; object-fit:cover; border:1px solid var(--line); }
+    @media (max-width:560px) {
+      .menu-option-group-head { grid-template-columns:minmax(0,1fr) auto; }
+      .menu-option-group-head .option-required { grid-column:1 / -1; }
+      .menu-option-choice { grid-template-columns:minmax(0,1fr) auto; }
+      .menu-option-choice .option-price { grid-column:1; }
+      .menu-option-choice .option-remove { grid-column:2; grid-row:1 / span 2; }
+    }
+
+    .welcome-item { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+    .sequence-number { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--green-800); background: var(--green-100); font-weight: 700; }
+    .template-card, .image-card { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+    .template-preview { max-height: 250px; overflow: auto; padding: 10px; border: 1px solid #dce7df; border-radius: 9px; background: #f8fbf9; }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(170px,1fr)); gap: 12px; }
+    .image-card img { width: 100%; height: 125px; object-fit: cover; border-radius: 7px; background: #f0f3f1; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .split-layout { grid-template-columns: 280px minmax(0,1fr); }
+    }
+    @media (max-width: 820px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .mobile-backdrop.visible { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(9,26,20,.45); }
+      .main { margin-left: 0; }
+      .mobile-menu { display: inline-grid !important; }
+      .topbar { padding: 10px 13px; }
+      .content { padding: 17px 13px 35px; }
+      .split-layout { grid-template-columns: 1fr; }
+      .chat-list { max-height: 210px; }
+      .connection-pill { display: none; }
+    }
+    @media (max-width: 560px) {
+      .grid-2, .grid-3, .grid-4, .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .page-heading { font-size: 21px; }
+      .agent-wrap { display: none; }
+      .search-box { min-width: 100%; }
+      .toolbar-left, .toolbar-right { width: 100%; }
+      .toolbar-left > *, .toolbar-right > * { flex: 1; }
+      .welcome-item { grid-template-columns: 34px minmax(0,1fr); }
+      .welcome-item .item-actions { grid-column: 2; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><i class="fa-solid fa-bowl-food"></i></div>
+        <div>
+          <div class="brand-title">LINE AI STUDIO</div>
+          <div class="brand-subtitle">ก๋วยเตี๋ยวโบราณ by เจ๊อ้น</div>
+        </div>
+      </div>
+
+      <nav class="nav-scroll" id="navigation">
+        <div class="nav-group">
+          <div class="nav-label">ภาพรวม</div>
+          <button class="nav-link active" data-page="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">AI และข้อความ</div>
+          <button class="nav-link" data-page="ai"><i class="fa-solid fa-robot"></i> AI Assistant</button>
+          <button class="nav-link" data-page="prompts"><i class="fa-solid fa-terminal"></i> Prompt Management</button>
+          <button class="nav-link" data-page="knowledge"><i class="fa-solid fa-book-open"></i> Knowledge Base</button>
+          <button class="nav-link" data-page="faq"><i class="fa-regular fa-circle-question"></i> FAQ</button>
+          <button class="nav-link" data-page="playground"><i class="fa-solid fa-flask"></i> AI Playground</button>
+          <button class="nav-link" data-page="welcome"><i class="fa-solid fa-handshake"></i> Welcome Message</button>
+          <button class="nav-link" data-page="flex"><i class="fa-regular fa-message"></i> Flex Message Builder</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">LINE และลูกค้า</div>
+          <button class="nav-link" data-page="members"><i class="fa-solid fa-users"></i> สมาชิก LINE</button>
+          <button class="nav-link" data-page="chat"><i class="fa-solid fa-comments"></i> Live Chat</button>
+          <button class="nav-link" data-page="handover"><i class="fa-solid fa-headset"></i> คิวเจ้าหน้าที่</button>
+          <button class="nav-link" data-page="broadcast"><i class="fa-solid fa-paper-plane"></i> Broadcast</button>
+          <button class="nav-link" data-page="richmenus"><i class="fa-solid fa-table-cells-large"></i> Rich Menu</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">ระบบร้านอาหาร</div>
+          <button class="nav-link" data-page="menu"><i class="fa-solid fa-utensils"></i> เมนูอาหาร</button>
+          <button class="nav-link" data-page="images"><i class="fa-regular fa-images"></i> คลังรูปภาพ</button>
+          <button class="nav-link" data-page="orders"><i class="fa-solid fa-receipt"></i> จัดการออเดอร์</button>
+          <button class="nav-link" data-page="keywords"><i class="fa-solid fa-filter"></i> Keyword Rules</button>
+          <button class="nav-link" data-page="automations"><i class="fa-solid fa-gears"></i> Automation</button>
+          <button class="nav-link" data-page="flow"><i class="fa-solid fa-diagram-project"></i> Conversation Flow</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">ผู้ดูแลและรายงาน</div>
+          <button class="nav-link" data-page="staff"><i class="fa-solid fa-user-tie"></i> พนักงานและกลุ่ม LINE</button>
+          <button class="nav-link" data-page="reports"><i class="fa-solid fa-chart-pie"></i> Reports</button>
+          <button class="nav-link" data-page="logs"><i class="fa-solid fa-clipboard-list"></i> System Logs</button>
+          <button class="nav-link" data-page="database"><i class="fa-solid fa-database"></i> Database Manager</button>
+          <button class="nav-link" data-page="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่าระบบ</button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div><i class="fa-solid fa-shield-halved"></i> Management Console</div>
+        <div>Apps Script · Version 1.0</div>
+      </div>
+    </aside>
+
+    <div class="mobile-backdrop" id="mobileBackdrop"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn mobile-menu" id="mobileMenu" aria-label="เปิดเมนู">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-heading" id="pageTitle">Dashboard</div>
+            <div class="page-subheading" id="pageSubtitle">ภาพรวมการทำงานของร้านและระบบ LINE AI</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <span class="connection-pill" id="connectionStatus"><i class="fa-solid fa-circle"></i> กำลังตรวจสอบระบบ</span>
+          <label class="agent-wrap small muted">
+            ผู้ให้บริการ
+            <input class="agent-field" id="agentName" value="Ponlabat">
+          </label>
+          <button class="icon-btn" id="apiConfigButton" title="ตั้งค่าการเชื่อมต่อ Google Apps Script API"><i class="fa-solid fa-link"></i></button>
+          <button class="icon-btn" id="refreshButton" title="รีเฟรชข้อมูล"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+      </header>
+      <section class="content" id="pageContent">
+        <div class="empty"><i class="fa-solid fa-spinner fa-spin"></i><strong>กำลังโหลดระบบ</strong></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    /*
+      FRONTEND DEPLOYMENT
+      - This file is hosted on GitHub Pages (not inside Apps Script).
+      - Backend is the standalone Code.gs Google Apps Script Web App.
+      - Enter the apiUrl returned by setupSystem() in the API configuration dialog.
+      - Requests use form POST -> hidden iframe + JSONP polling for results (Code.gs).
+      - Do not add LINE/Gemini/ImgBB secrets to this repository.
+    */
+
+    /* -----------------------------------------------------------------------
+       State, navigation and API bridge
+       -------------------------------------------------------------------- */
+
+    const state = {
+      page: "dashboard",
+      selectedMembers: new Set(),
+      members: [],
+      flexTemplates: [],
+      menuItems: [],
+      categories: [],
+      welcomeMessages: [],
+      chatUserId: "",
+      chatMode: "AI",
+      chatRefreshTimer: null
+    };
+
+    const PAGE_META = {
+      dashboard: ["Dashboard", "ภาพรวมการทำงานของร้านและระบบ LINE AI"],
+      ai: ["AI Assistant", "กำหนดพฤติกรรมและการทำงานของผู้ช่วย AI"],
+      prompts: ["Prompt Management", "จัดการ System Prompt และประวัติเวอร์ชัน"],
+      knowledge: ["Knowledge Base", "จัดการข้อมูลที่ AI ใช้อ้างอิง"],
+      faq: ["FAQ", "จัดการคำถามและคำตอบที่พบบ่อย"],
+      playground: ["AI Playground", "ตรวจสอบการเชื่อมต่อ Gemini"],
+      welcome: ["Welcome Message", "กำหนดชุดข้อความต้อนรับเพื่อนใหม่"],
+      flex: ["Flex Message Builder", "สร้างและจัดการ Flex Message"],
+      members: ["สมาชิก LINE", "ดูรายชื่อ ค้นหา เลือกสมาชิก และส่ง Flex"],
+      chat: ["Live Chat", "สนทนากับลูกค้าและสลับ AI / เจ้าหน้าที่"],
+      handover: ["คิวเจ้าหน้าที่", "จัดการคำขอติดต่อเจ้าหน้าที่และ Timeout"],
+      broadcast: ["Broadcast", "ส่งข้อความไปยังสมาชิกที่เลือก"],
+      menu: ["เมนูอาหาร", "จัดการหมวดหมู่ รายการอาหาร ราคา และรูปภาพ"],
+      images: ["คลังรูปภาพ", "อัปโหลดและจัดการรูปภาพ ImgBB"],
+      orders: ["จัดการออเดอร์", "ตรวจสอบและเปลี่ยนสถานะรายการสั่งอาหาร"],
+      keywords: ["Keyword Rules", "ตั้งกฎตอบกลับตามคำสำคัญ"],
+      automations: ["Automation", "กำหนด Trigger และ Action อัตโนมัติ"],
+      flow: ["Conversation Flow", "แนวทางออกแบบลำดับบทสนทนา"],
+      richmenus: ["Rich Menu", "จัดการ Rich Menu ของ LINE OA"],
+      staff: ["พนักงานและกลุ่ม LINE", "จัดการผู้ให้บริการและกลุ่มแจ้งเตือน"],
+      reports: ["Reports", "รายงานแชทและยอดขาย"],
+      logs: ["System Logs", "ประวัติการทำงานและข้อผิดพลาด"],
+      database: ["Database Manager", "ตรวจสอบ Spreadsheet และแท็บข้อมูล"],
+      settings: ["ตั้งค่าระบบ", "ตั้งค่าร้านและตรวจสอบบริการที่เชื่อมต่อ"]
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    function parseJson(value, fallback = {}) {
+      if (value && typeof value === "object") return value;
+      try { return JSON.parse(value || ""); } catch (error) { return fallback; }
+    }
+
+    function money(value) {
+      return Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " บาท";
+    }
+
+    function dateTime(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString("th-TH", {
+        dateStyle: "medium", timeStyle: "short"
+      });
+    }
+
+    function notify(message, icon = "success") {
+      Swal.fire({
+        toast: true, position: "top-end", icon, title: message,
+        showConfirmButton: false, timer: 2600, timerProgressBar: true
+      });
+    }
+
+    function showError(error) {
+      Swal.fire({
+        icon: "error",
+        title: "ดำเนินการไม่สำเร็จ",
+        text: error && error.message ? error.message : String(error)
+      });
+    }
+
+    async function confirmAction(title, text, confirmText = "ยืนยัน") {
+      const result = await Swal.fire({
+        icon: "warning", title, text,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: "ยกเลิก",
+        confirmButtonColor: "#205445",
+        reverseButtons: true
+      });
+      return result.isConfirmed;
+    }
+
+    /* -----------------------------------------------------------------------
+       GitHub -> Google Apps Script API bridge
+       Contract from Code.gs:
+       POST {api=1, action, payload, requestId, apiKey}; then poll GET ?poll=1
+       Code.gs stores the result briefly and returns it via JSONP callback.
+       -------------------------------------------------------------------- */
+
+    const API_STORAGE_KEYS = {
+      endpoint: "LINE_AI_STUDIO_API_ENDPOINT",
+      apiKey: "LINE_AI_STUDIO_DASHBOARD_API_KEY"
+    };
+    const API_POLL_INTERVAL = 1000;
+    const API_DEFAULT_TIMEOUT = 210000;
+    const apiPendingRequests = new Map();
+
+    function readClientApiConfig() {
+      return {
+        endpoint: localStorage.getItem(API_STORAGE_KEYS.endpoint) || "",
+        apiKey: localStorage.getItem(API_STORAGE_KEYS.apiKey) || ""
+      };
+    }
+
+    function normalizeApiEndpoint(value) {
+      const raw = String(value || "").trim();
+      if (!raw) throw new Error("กรุณาระบุ Web App API URL จาก setupSystem() ใน Code.gs");
+      let url;
+      try {
+        url = new URL(raw);
+      } catch (error) {
+        throw new Error("รูปแบบ API URL ไม่ถูกต้อง");
+      }
+      if (url.protocol !== "https:") throw new Error("API URL ต้องเป็น HTTPS");
+      if (!/script\.google\.com$/i.test(url.hostname) || !url.pathname.includes("/macros/s/")) {
+        throw new Error("กรุณาใช้ Web App URL จาก Google Apps Script ที่ลงท้ายด้วย /exec");
+      }
+      url.searchParams.set("api", "1");
+      url.searchParams.delete("hook");
+      return url.toString();
+    }
+
+    function getApiEndpoint() {
+      return localStorage.getItem(API_STORAGE_KEYS.endpoint) || "";
+    }
+
+    function getApiKey() {
+      return localStorage.getItem(API_STORAGE_KEYS.apiKey) || "";
+    }
+
+    function makeRequestId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return "req_" + window.crypto.randomUUID().replace(/-/g, "");
+      }
+      return "req_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 14);
+    }
+
+    function removeApiRequest(requestId) {
+      const pending = apiPendingRequests.get(requestId);
+      if (!pending) return;
+      clearTimeout(pending.timeoutId);
+      clearTimeout(pending.pollTimer);
+      if (pending.pollScript && pending.pollScript.parentNode) pending.pollScript.parentNode.removeChild(pending.pollScript);
+      if (pending.form && pending.form.parentNode) pending.form.parentNode.removeChild(pending.form);
+      if (pending.iframe && pending.iframe.parentNode) pending.iframe.parentNode.removeChild(pending.iframe);
+      apiPendingRequests.delete(requestId);
+    }
+
+    function finishApiRequest(requestId, result) {
+      const pending = apiPendingRequests.get(requestId);
+      if (!pending) return;
+      removeApiRequest(requestId);
+      if (result && result.ok === false) {
+        let messageText = result.error || "Backend ไม่สามารถดำเนินการได้";
+        if (result.hint && !messageText.includes(result.hint)) messageText += String.fromCharCode(10) + result.hint;
+        pending.reject(new Error(messageText));
+      } else {
+        pending.resolve(result || {});
+      }
+    }
+
+    // Receive results from the fixed JSONP callback served by Apps Script.
+    window.lineAiApiReceive = function (message) {
+      if (!message || !message.requestId) return;
+      const requestId = String(message.requestId);
+      const pending = apiPendingRequests.get(requestId);
+      if (!pending) return;
+
+      pending.pollInFlight = false;
+      if (pending.pollScript && pending.pollScript.parentNode) {
+        pending.pollScript.parentNode.removeChild(pending.pollScript);
+      }
+      pending.pollScript = null;
+
+      if (message.ready === true) {
+        finishApiRequest(requestId, message.result || {});
+        return;
+      }
+      pending.pollTimer = setTimeout(() => pollApiResult(requestId), API_POLL_INTERVAL);
+    };
+
+    function pollApiResult(requestId) {
+      const pending = apiPendingRequests.get(requestId);
+      if (!pending || pending.pollInFlight) return;
+      pending.pollInFlight = true;
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = pending.pollUrl + "&requestId=" + encodeURIComponent(requestId) + "&_=" + Date.now();
+      pending.pollScript = script;
+      script.onerror = () => {
+        const current = apiPendingRequests.get(requestId);
+        if (!current) return;
+        current.pollInFlight = false;
+        current.pollScript = null;
+        current.pollTimer = setTimeout(() => pollApiResult(requestId), 1200);
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      script.onload = () => {
+        const current = apiPendingRequests.get(requestId);
+        if (!current) return;
+        // If JSONP did not invoke the callback, retry after a short delay.
+        if (current.pollScript === script) {
+          current.pollInFlight = false;
+          current.pollScript = null;
+          current.pollTimer = setTimeout(() => pollApiResult(requestId), 1200);
+        }
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      document.head.appendChild(script);
+    }
+
+    function callApi(action, payload = {}, options = {}) {
+      return new Promise((resolve, reject) => {
+        let endpoint;
+        try {
+          endpoint = normalizeApiEndpoint(getApiEndpoint());
+        } catch (error) {
+          reject(error);
+          return;
+        }
+
+        const requestId = makeRequestId();
+        const frameName = "line_ai_api_frame_" + requestId;
+        const iframe = document.createElement("iframe");
+        iframe.name = frameName;
+        iframe.title = "API request frame";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.tabIndex = -1;
+        iframe.style.cssText = "position:fixed;left:-10000px;top:-10000px;width:1px;height:1px;border:0;visibility:hidden;";
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = endpoint;
+        form.target = frameName;
+        form.acceptCharset = "UTF-8";
+        form.enctype = "application/x-www-form-urlencoded";
+        form.style.display = "none";
+
+        const fields = {
+          action: String(action || ""),
+          payload: JSON.stringify(payload || {}),
+          requestId: requestId,
+          apiKey: getApiKey()
+        };
+        Object.keys(fields).forEach(name => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = name;
+          input.value = fields[name];
+          form.appendChild(input);
+        });
+
+        const pollUrl = new URL(endpoint);
+        pollUrl.searchParams.set("poll", "1");
+        pollUrl.searchParams.delete("requestId");
+        pollUrl.searchParams.delete("_");
+
+        const timeoutMs = Number(options.timeoutMs || API_DEFAULT_TIMEOUT);
+        const timeoutId = setTimeout(() => {
+          removeApiRequest(requestId);
+          reject(new Error("หมดเวลารอผล API แม้ส่งคำขอไปแล้ว กรุณาตรวจสอบ Executions และการ Deploy อีกครั้ง"));
+        }, timeoutMs);
+
+        apiPendingRequests.set(requestId, {
+          iframe: iframe,
+          form: form,
+          timeoutId: timeoutId,
+          pollTimer: null,
+          pollScript: null,
+          pollInFlight: false,
+          pollUrl: pollUrl.toString(),
+          resolve: resolve,
+          reject: reject
+        });
+
+        document.body.appendChild(iframe);
+        document.body.appendChild(form);
+        try {
+          form.submit();
+          // First poll may report not-ready; polling continues until POST stores the result.
+          const pending = apiPendingRequests.get(requestId);
+          if (pending) pending.pollTimer = setTimeout(() => pollApiResult(requestId), 250);
+        } catch (error) {
+          removeApiRequest(requestId);
+          reject(error);
+        }
+      });
+    }
+
+    async function configureApiConnection(testAfterSave = true) {
+      const current = readClientApiConfig();
+      const result = await Swal.fire({
+        title: "ตั้งค่าการเชื่อมต่อ API",
+        width: 680,
+        html: `
+          <div style="text-align:left">
+            <div class="notice" style="margin-bottom:12px">
+              นำค่า <strong>apiUrl</strong> ที่ได้จากการรัน <strong>setupSystem()</strong> ใน Code.gs มาวางที่นี่
+              โดยหน้าเว็บนี้โฮสต์บน GitHub ส่งคำสั่งด้วย Form POST และรับผลผ่าน JSONP polling
+            </div>
+            <div class="field">
+              <label for="apiEndpointInput">Google Apps Script Web App API URL</label>
+              <input id="apiEndpointInput" class="control" type="url" style="width:100%" value="${escapeHtml(current.endpoint)}" placeholder="https://script.google.com/macros/s/.../exec?api=1" required>
+            </div>
+            <div class="field" style="margin-top:12px">
+              <label for="apiKeyInput">Dashboard API Key (เว้นว่างถ้าไม่ได้ตั้งค่า)</label>
+              <input id="apiKeyInput" class="control" type="password" style="width:100%" value="${escapeHtml(current.apiKey)}" autocomplete="off" placeholder="ใช้เมื่อกำหนด DASHBOARD_API_KEY ใน Script Properties">
+              <div class="field-help">เก็บไว้ใน Local Storage ของเบราว์เซอร์นี้ ไม่ถูกเขียนลงไฟล์ GitHub อย่างไรก็ตามห้ามใช้เป็นมาตรการความปลอดภัยสำหรับเว็บไซต์สาธารณะ</div>
+            </div>
+          </div>`,
+        showCancelButton: true,
+        confirmButtonText: "บันทึกและทดสอบการเชื่อมต่อ",
+        cancelButtonText: "ยกเลิก",
+        confirmButtonColor: "#205445",
+        focusConfirm: false,
+        preConfirm: () => {
+          try {
+            return {
+              endpoint: normalizeApiEndpoint($("#apiEndpointInput").value),
+              apiKey: $("#apiKeyInput").value.trim()
+            };
+          } catch (error) {
+            Swal.showValidationMessage(error.message || String(error));
+            return false;
+          }
+        }
+      });
+      if (!result.isConfirmed) return false;
+
+      localStorage.setItem(API_STORAGE_KEYS.endpoint, result.value.endpoint);
+      localStorage.setItem(API_STORAGE_KEYS.apiKey, result.value.apiKey);
+
+      if (!testAfterSave) return true;
+      Swal.fire({
+        title: "กำลังทดสอบ API",
+        text: "กำลังตรวจสอบการตอบกลับจาก Google Apps Script",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+      try {
+        const status = await callApi("system.status", {}, {timeoutMs: 60000});
+        Swal.fire({
+          icon: "success",
+          title: "เชื่อมต่อ API สำเร็จ",
+          text: status.databaseReady ? "เชื่อมต่อ Backend และพบฐานข้อมูลแล้ว" : "เชื่อมต่อ Backend ได้แล้ว แต่ยังไม่พบฐานข้อมูล กรุณารัน setupSystem() ใน Apps Script",
+          confirmButtonColor: "#205445"
+        });
+        if (status.databaseReady) {
+          navigate("dashboard");
+        } else {
+          renderDatabaseSetupRequired();
+        }
+        return true;
+      } catch (error) {
+        showError(error);
+        return false;
+      }
+    }
+
+    function renderApiSetupRequired() {
+      $("#pageContent").innerHTML = `
+        <div class="panel" style="max-width:760px;margin:35px auto">
+          <div class="stat-icon" style="width:54px;height:54px;font-size:24px"><i class="fa-solid fa-plug"></i></div>
+          <div class="panel-title" style="margin-top:12px">ยังไม่ได้ตั้งค่า Backend API</div>
+          <p class="muted">หน้าเว็บนี้ทำงานบน GitHub ส่วนฐานข้อมูลและ API อยู่บน Google Apps Script กรุณานำ apiUrl จากผลลัพธ์ setupSystem() มาตั้งค่าก่อนใช้งาน</p>
+          <button class="btn btn-primary" id="openApiSetup"><i class="fa-solid fa-link"></i> ตั้งค่าการเชื่อมต่อ</button>
+        </div>`;
+      $("#openApiSetup").addEventListener("click", () => configureApiConnection(true));
+    }
+
+    function renderDatabaseSetupRequired() {
+      $("#pageContent").innerHTML = `
+        <div class="panel" style="max-width:820px;margin:35px auto">
+          <div class="stat-icon" style="width:54px;height:54px;font-size:24px"><i class="fa-solid fa-database"></i></div>
+          <div class="panel-title" style="margin-top:12px">เชื่อมต่อ Backend สำเร็จ แต่ยังไม่พบฐานข้อมูล</div>
+          <p class="muted">กรุณาเปิด Google Apps Script Editor ของโปรเจกต์ Code.gs เลือกฟังก์ชัน <code>setupSystem</code> แล้วกด Run และอนุญาตสิทธิ์ที่ระบบร้องขอ จากนั้นกลับมากดปุ่มตรวจสอบอีกครั้ง</p>
+          <div class="toolbar-left">
+            <button class="btn btn-primary" id="checkDatabaseReady"><i class="fa-solid fa-rotate"></i> ตรวจสอบอีกครั้ง</button>
+            <button class="btn btn-secondary" id="editApiConnection"><i class="fa-solid fa-link"></i> ตั้งค่า API URL</button>
+          </div>
+        </div>`;
+      $("#checkDatabaseReady").addEventListener("click", async () => {
+        try {
+          const status = await callApi("system.status", {}, {timeoutMs:60000});
+          if (status.databaseReady) navigate("dashboard");
+          else notify("ยังไม่พบฐานข้อมูล กรุณารัน setupSystem()", "warning");
+        } catch (error) { showError(error); }
+      });
+      $("#editApiConnection").addEventListener("click", () => configureApiConnection(true));
+    }
+
+    function statusBadge(value) {
+      const key = String(value || "").toUpperCase();
+      const map = {
+        AI: ["AI ดูแล", "success"], HUMAN: ["แอดมินดูแล", "info"],
+        WAITING: ["รอเจ้าหน้าที่", "warning"], PAUSED: ["หยุดชั่วคราว", ""],
+        CLOSED: ["ปิดแชท", ""], NEW: ["ออเดอร์ใหม่", "warning"],
+        ACCEPTED: ["รับออเดอร์แล้ว", "info"], COOKING: ["กำลังจัดเตรียม", "info"],
+        READY: ["พร้อมรับอาหาร", "success"], COMPLETED: ["เสร็จสิ้น", "success"],
+        CANCELLED: ["ยกเลิก", "danger"], SENT: ["ส่งแล้ว", "success"],
+        FAILED: ["ไม่สำเร็จ", "danger"], ERROR: ["ERROR", "danger"],
+        WARN: ["WARNING", "warning"], INFO: ["INFO", "info"],
+        QUEUED: ["อยู่ในคิว", "warning"], SCHEDULED: ["ตั้งเวลาแล้ว", "info"]
+      };
+      const item = map[key] || [value || "-", ""];
+      return `<span class="badge ${item[1]}">${escapeHtml(item[0])}</span>`;
+    }
+
+    function panel(title, description, content, actions = "") {
+      return `<section class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">${title}</div><div class="panel-description">${description || ""}</div></div>
+          ${actions}
+        </div>
+        ${content}
+      </section>`;
+    }
+
+    function tableHtml(headers, rows, emptyText = "ยังไม่มีข้อมูล") {
+      if (!rows.length) {
+        return `<div class="empty"><i class="fa-regular fa-folder-open"></i><strong>${emptyText}</strong></div>`;
+      }
+      return `<div class="table-wrap"><table>
+        <thead><tr>${headers.map(header => `<th>${header}</th>`).join("")}</tr></thead>
+        <tbody>${rows.join("")}</tbody>
+      </table></div>`;
+    }
+
+    function field(label, name, value = "", type = "text", options = {}) {
+      const full = options.full ? "full" : "";
+      const required = options.required ? "required" : "";
+      if (type === "textarea") {
+        return `<div class="field ${full}">
+          <label for="${name}">${label}</label>
+          <textarea id="${name}" name="${name}" ${required}>${escapeHtml(value)}</textarea>
+          ${options.help ? `<div class="field-help">${options.help}</div>` : ""}
+        </div>`;
+      }
+      if (type === "select") {
+        const optionHtml = (options.options || []).map(item => {
+          const optionValue = typeof item === "string" ? item : item.value;
+          const optionLabel = typeof item === "string" ? item : item.label;
+          return `<option value="${escapeHtml(optionValue)}" ${String(optionValue) === String(value) ? "selected" : ""}>${escapeHtml(optionLabel)}</option>`;
+        }).join("");
+        return `<div class="field ${full}">
+          <label for="${name}">${label}</label>
+          <select id="${name}" name="${name}" ${required}>${optionHtml}</select>
+          ${options.help ? `<div class="field-help">${options.help}</div>` : ""}
+        </div>`;
+      }
+      return `<div class="field ${full}">
+        <label for="${name}">${label}</label>
+        <input id="${name}" name="${name}" type="${type}" value="${escapeHtml(value)}" ${required}>
+        ${options.help ? `<div class="field-help">${options.help}</div>` : ""}
+      </div>`;
+    }
+
+    function checkbox(label, name, checked) {
+      return `<label class="check-row"><input type="checkbox" name="${name}" ${checked ? "checked" : ""}> ${label}</label>`;
+    }
+
+    function formValues(form) {
+      const result = {};
+      new FormData(form).forEach((value, key) => { result[key] = value; });
+      $$('input[type="checkbox"]', form).forEach(input => { if (input.name) result[input.name] = input.checked; });
+      return result;
+    }
+
+    async function modalForm(title, fieldsHtml, submitText = "บันทึก", onOpen = null, collectExtra = null) {
+      const result = await Swal.fire({
+        title,
+        html: `<form id="modalDataForm" class="form-grid" style="text-align:left">${fieldsHtml}</form>`,
+        width: 760,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: submitText,
+        cancelButtonText: "ยกเลิก",
+        confirmButtonColor: "#205445",
+        didOpen: () => { if (typeof onOpen === "function") onOpen(); },
+        preConfirm: () => {
+          const form = $("#modalDataForm");
+          if (!form.reportValidity()) return false;
+          const values = formValues(form);
+          if (typeof collectExtra === "function") {
+            try {
+              const extra = collectExtra(form);
+              if (extra === false) return false;
+              Object.assign(values, extra || {});
+            } catch (error) {
+              Swal.showValidationMessage(error.message || String(error));
+              return false;
+            }
+          }
+          return values;
+        }
+      });
+      return result.isConfirmed ? result.value : null;
+    }
+
+    async function deleteRecord(action, payload, question) {
+      if (!(await confirmAction("ยืนยันการลบ", question, "ลบข้อมูล"))) return;
+      await callApi(action, payload);
+      notify("ลบข้อมูลแล้ว");
+      renderPage(state.page);
+    }
+
+    function navigate(page) {
+      if (!PAGE_META[page]) return;
+      state.page = page;
+      $$(".nav-link").forEach(button => button.classList.toggle("active", button.dataset.page === page));
+      $("#pageTitle").textContent = PAGE_META[page][0];
+      $("#pageSubtitle").textContent = PAGE_META[page][1];
+      $("#sidebar").classList.remove("open");
+      $("#mobileBackdrop").classList.remove("visible");
+      renderPage(page);
+    }
+
+    async function renderPage(page) {
+      if (page !== "chat" && state.chatRefreshTimer) {
+        clearInterval(state.chatRefreshTimer);
+        state.chatRefreshTimer = null;
+      }
+      const root = $("#pageContent");
+      root.innerHTML = '<div class="empty"><i class="fa-solid fa-spinner fa-spin"></i><strong>กำลังโหลดข้อมูล</strong></div>';
+      try {
+        await PAGE_RENDERERS[page](root);
+      } catch (error) {
+        root.innerHTML = `<div class="notice warning">โหลดข้อมูลไม่สำเร็จ: ${escapeHtml(error.message || error)}</div>`;
+        showError(error);
+      }
+    }
+
+    function safeImage(url, alt = "") {
+      if (!url || !/^https:\/\//i.test(url)) return "";
+      return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" loading="lazy">`;
+    }
+
+    async function testService(action) {
+      try {
+        const result = await callApi(action);
+        const details = [
+          result.provider || "",
+          result.model || "",
+          result.fallbackUsed ? "ระบบใช้โมเดลสำรอง" : "",
+          result.response || result.message || "บริการตอบกลับปกติ"
+        ].filter(Boolean).join(" · ");
+        Swal.fire({ icon: "success", title: "เชื่อมต่อสำเร็จ", text: details });
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    /* -----------------------------------------------------------------------
+       Dashboard and AI configuration
+       -------------------------------------------------------------------- */
+
+    async function renderDashboard(root) {
+      const data = await callApi("dashboard.get");
+      const stats = data.stats || {};
+      const metrics = [
+        ["เพื่อน LINE ทั้งหมด", stats.totalFriends, "fa-users"],
+        ["เพื่อนใหม่วันนี้", stats.newFriendsToday, "fa-user-plus"],
+        ["ห้องแชททั้งหมด", stats.totalChats, "fa-comments"],
+        ["รอเจ้าหน้าที่", stats.waitingAgents, "fa-headset"],
+        ["ข้อความวันนี้", stats.messagesToday, "fa-message"],
+        ["ออเดอร์วันนี้", stats.ordersToday, "fa-receipt"],
+        ["ยอดขายวันนี้", money(stats.salesToday), "fa-coins"],
+        ["ออเดอร์ที่ยังเปิด", stats.openOrders, "fa-clipboard-list"]
+      ];
+      const orders = (data.recentOrders || []).map(order => `<tr>
+        <td><strong>${escapeHtml(order.orderId)}</strong></td>
+        <td>${escapeHtml(order.displayName || "-")}</td>
+        <td>${escapeHtml(order.fulfillmentType || "-")}</td>
+        <td>${money(order.total)}</td>
+        <td>${statusBadge(order.status)}</td>
+        <td>${dateTime(order.createdAt)}</td>
+      </tr>`);
+      const system = data.system || {};
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <div><div class="small muted">ภาพรวมการดำเนินงานของร้าน</div><strong>${escapeHtml(data.restaurant || "ก๋วยเตี๋ยวโบราณ by เจ๊อ้น")}</strong></div>
+          <button class="btn btn-secondary" id="refreshDashboard"><i class="fa-solid fa-rotate"></i> รีเฟรช</button>
+        </div>
+        <div class="grid grid-4">
+          ${metrics.map(item => `<div class="stat-card">
+            <div><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1] ?? 0}</div></div>
+            <div class="stat-icon"><i class="fa-solid ${item[2]}"></i></div>
+          </div>`).join("")}
+        </div>
+        <div class="grid grid-2" style="margin-top:15px">
+          ${panel("สถานะบริการ", "ผลการตรวจสอบการตั้งค่าบริการหลัก", `
+            ${[
+              ["Google Sheets", system.databaseReady],
+              ["LINE Messaging API", system.lineConfigured],
+              ["Grok 4.7 (หลัก)", system.grokConfigured],
+              ["Google Gemini (สำรอง)", system.geminiConfigured],
+              ["ImgBB", system.imgbbConfigured]
+            ].map(item => `<div class="check-row" style="margin:9px 0">
+              <i class="fa-solid ${item[1] ? "fa-circle-check" : "fa-circle-xmark"}" style="color:${item[1] ? "#26976c" : "#b43e3e"}"></i>
+              <span>${item[0]}</span><strong style="margin-left:auto">${item[1] ? "พร้อมใช้งาน" : "ยังไม่ตั้งค่า"}</strong>
+            </div>`).join("")}
+            <div class="divider"></div>
+            ${system.spreadsheetUrl ? `<a class="btn btn-secondary btn-small" href="${escapeHtml(system.spreadsheetUrl)}" target="_blank" rel="noopener"><i class="fa-solid fa-table"></i> เปิด Google Sheets</a>` : ""}
+          `)}
+          ${panel("เมนูทางลัด", "เข้าถึงงานที่ใช้บ่อย", `
+            <div class="grid grid-2">
+              <button class="btn btn-secondary" data-go="chat"><i class="fa-solid fa-comments"></i> Live Chat</button>
+              <button class="btn btn-secondary" data-go="orders"><i class="fa-solid fa-receipt"></i> ออเดอร์</button>
+              <button class="btn btn-secondary" data-go="members"><i class="fa-solid fa-users"></i> สมาชิก LINE</button>
+              <button class="btn btn-secondary" data-go="welcome"><i class="fa-solid fa-handshake"></i> ข้อความต้อนรับ</button>
+            </div>
+          `)}
+        </div>
+        <div style="margin-top:15px">${panel("ออเดอร์ล่าสุด", "รายการสั่งอาหารที่บันทึกล่าสุด", tableHtml(
+          ["เลขที่ออเดอร์","ลูกค้า","วิธีรับอาหาร","ยอดรวม","สถานะ","วันที่"], orders, "ยังไม่มีออเดอร์"
+        ))}</div>`;
+      $("#refreshDashboard").addEventListener("click", () => renderPage("dashboard"));
+      $$("[data-go]").forEach(button => button.addEventListener("click", () => navigate(button.dataset.go)));
+      $("#connectionStatus").innerHTML = `<i class="fa-solid fa-circle"></i> ${system.databaseReady && system.lineConfigured ? "ระบบหลักพร้อมใช้งาน" : "ตรวจสอบการตั้งค่า"}`;
+    }
+
+    async function renderAi(root) {
+      const settings = await callApi("settings.get");
+      root.innerHTML = `
+        <div class="notice">API Key ต้องจัดเก็บใน Apps Script → Project Settings → Script Properties เท่านั้น ห้ามใส่รหัสลับใน HTML หรือ GitHub</div>
+        <div class="grid grid-2" style="margin-top:15px">
+          ${panel("ตั้งค่า AI", "กำหนดโมเดลและพฤติกรรมการตอบ", `
+            <form id="aiForm" class="form-grid">
+              <div class="notice" style="grid-column:1/-1"><strong>โมเดลหลัก:</strong> xAI Grok 4.7 <span class="muted">(grok-4.7)</span><br><strong>โมเดลสำรอง:</strong> Google Gemini <span class="muted">(ใช้เมื่อ Grok ไม่พร้อมใช้งาน)</span></div>
+              ${field("Grok Model (หลัก)", "grokModel", settings.grokModel || "grok-4.7", "text", {full:true})}
+              ${field("Gemini Model (สำรอง)", "geminiModel", settings.geminiModel || "gemini-3.8-flash", "text", {full:true})}
+              ${field("Temperature (0-1)", "aiTemperature", settings.aiTemperature ?? .4, "number")}
+              ${field("Max Output Tokens", "aiMaxOutputTokens", settings.aiMaxOutputTokens || 700, "number")}
+              ${field("Loading Animation (วินาที)", "aiLoadingSeconds", settings.aiLoadingSeconds || 10, "number")}
+              ${field("ข้อความสำรองเมื่อ AI ไม่ทราบ", "aiFallbackMessage", settings.aiFallbackMessage || "", "textarea", {full:true})}
+              <div class="field full">${checkbox("เปิดใช้งาน AI", "aiEnabled", settings.aiEnabled !== false)}</div>
+              <div class="field full">${checkbox("เปิด Loading Animation ของ LINE", "aiLoadingAnimation", settings.aiLoadingAnimation !== false)}</div>
+              <div class="field full"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button></div>
+            </form>
+          `)}
+          ${panel("ตรวจสอบ API", "ทดสอบบริการที่เชื่อมต่อ", `
+            <div class="check-row" style="margin:8px 0">xAI API Key (Grok ตัวหลัก) <strong style="margin-left:auto">${settings.hasGrokKey ? "ตั้งค่าแล้ว" : "ยังไม่ตั้งค่า"}</strong></div>
+            <div class="check-row" style="margin:8px 0">Gemini API Key (โมเดลสำรอง) <strong style="margin-left:auto">${settings.hasGeminiKey ? "ตั้งค่าแล้ว" : "ยังไม่ตั้งค่า"}</strong></div>
+            <div class="check-row" style="margin:8px 0">LINE Access Token <strong style="margin-left:auto">${settings.hasLineToken ? "ตั้งค่าแล้ว" : "ยังไม่ตั้งค่า"}</strong></div>
+            <div class="check-row" style="margin:8px 0">ImgBB API Key <strong style="margin-left:auto">${settings.hasImgbbKey ? "ตั้งค่าแล้ว" : "ยังไม่ตั้งค่า"}</strong></div>
+            <div class="divider"></div>
+            <button class="btn btn-primary" id="testAiRouter"><i class="fa-solid fa-wand-magic-sparkles"></i> ทดสอบ AI หลัก/สำรอง</button>
+            <button class="btn btn-secondary" id="testGrok"><i class="fa-solid fa-robot"></i> ทดสอบ Grok หลัก</button>
+            <button class="btn btn-secondary" id="testGemini"><i class="fa-solid fa-robot"></i> ทดสอบ Gemini สำรอง</button>
+            <button class="btn btn-secondary" id="testLine"><i class="fa-brands fa-line"></i> ทดสอบ LINE</button>
+            <button class="btn btn-secondary" id="testImgBB"><i class="fa-regular fa-image"></i> ทดสอบ ImgBB</button>
+          `)}
+        </div>`;
+      $("#aiForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        const values = formValues(event.currentTarget);
+        values.aiTemperature = Number(values.aiTemperature);
+        values.aiMaxOutputTokens = Number(values.aiMaxOutputTokens);
+        values.aiLoadingSeconds = Number(values.aiLoadingSeconds);
+        await callApi("settings.save", values);
+        notify("บันทึกการตั้งค่า AI แล้ว");
+      });
+      $("#testAiRouter").addEventListener("click", () => testService("system.testAI"));
+      $("#testGrok").addEventListener("click", () => testService("system.testGrok"));
+      $("#testGemini").addEventListener("click", () => testService("system.testGemini"));
+      $("#testLine").addEventListener("click", () => testService("system.testLine"));
+      $("#testImgBB").addEventListener("click", () => testService("system.testImgBB"));
+    }
+
+    /* -----------------------------------------------------------------------
+       Prompt, Knowledge Base and FAQ
+       -------------------------------------------------------------------- */
+
+    async function renderPrompts(root) {
+      const result = await callApi("prompts.list");
+      const prompts = result.prompts || [];
+      const rows = prompts.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong></td>
+        <td>${item.active ? statusBadge("AI") : statusBadge("PAUSED")}</td>
+        <td>${dateTime(item.updatedAt)}</td>
+        <td>
+          <button class="icon-btn" data-prompt-edit="${escapeHtml(item.promptId)}" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-prompt-history="${escapeHtml(item.promptId)}" title="ประวัติเวอร์ชัน"><i class="fa-solid fa-clock-rotate-left"></i></button>
+          ${!item.active ? `<button class="icon-btn" data-prompt-activate="${escapeHtml(item.promptId)}" title="เปิดใช้งาน"><i class="fa-solid fa-check"></i></button>` : ""}
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">Prompt ที่ Active จะเป็นคำสั่งหลักให้ Gemini ปฏิบัติตาม</span>
+          <button class="btn btn-primary" id="addPrompt"><i class="fa-solid fa-plus"></i> เพิ่ม Prompt</button>
+        </div>
+        ${panel("System Prompt", "จัดการ Persona, บทบาท, ข้อห้าม และแนวทางการตอบของ AI",
+          tableHtml(["ชื่อ Prompt","สถานะ","แก้ไขล่าสุด","จัดการ"], rows, "ยังไม่มี Prompt"))}`;
+      $("#addPrompt").addEventListener("click", () => editPrompt());
+      $$("[data-prompt-edit]").forEach(button => button.addEventListener("click", () => {
+        editPrompt(prompts.find(item => item.promptId === button.dataset.promptEdit));
+      }));
+      $$("[data-prompt-history]").forEach(button => button.addEventListener("click", async () => {
+        const result = await callApi("prompts.versions", {promptId:button.dataset.promptHistory});
+        Swal.fire({
+          title: "ประวัติ Prompt",
+          width: 800,
+          html: `<pre style="text-align:left;white-space:pre-wrap;max-height:55vh;overflow:auto">${escapeHtml(JSON.stringify(result.versions || result, null, 2))}</pre>`
+        });
+      }));
+      $$("[data-prompt-activate]").forEach(button => button.addEventListener("click", async () => {
+        await callApi("prompts.activate", {promptId:button.dataset.promptActivate});
+        notify("เปิดใช้งาน Prompt แล้ว");
+        navigate("prompts");
+      }));
+    }
+
+    async function editPrompt(item = {}) {
+      const result = await modalForm("System Prompt", `
+        ${field("ชื่อ Prompt", "name", item.name || "", "text", {full:true,required:true})}
+        ${field("System Prompt", "systemPrompt", item.systemPrompt || "", "textarea", {full:true,required:true})}
+        <div class="field full">${checkbox("ตั้งเป็น Prompt ที่ใช้งาน", "active", item.active !== false)}</div>
+      `);
+      if (!result) return;
+      await callApi("prompts.save", {
+        promptId: item.promptId || "",
+        name: result.name,
+        systemPrompt: result.systemPrompt,
+        active: Boolean(result.active)
+      });
+      notify("บันทึก Prompt แล้ว");
+      navigate("prompts");
+    }
+
+    async function renderKnowledge(root) {
+      const result = await callApi("knowledge.list");
+      const items = result.knowledge || [];
+      const rows = items.map(item => `<tr>
+        <td><strong>${escapeHtml(item.title)}</strong><div class="small muted">${escapeHtml(item.category || "")}</div></td>
+        <td>${escapeHtml(String(item.content || "").slice(0, 120))}</td>
+        <td>${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <button class="icon-btn" data-knowledge-edit="${escapeHtml(item.knowledgeId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-knowledge-delete="${escapeHtml(item.knowledgeId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">ข้อมูลนี้ใช้ประกอบการตอบคำถาม เช่น เมนู ราคา เวลาเปิดร้าน และบริการ</span>
+          <button class="btn btn-primary" id="addKnowledge"><i class="fa-solid fa-plus"></i> เพิ่มความรู้</button>
+        </div>
+        ${panel("Knowledge Base", "ข้อมูลประกอบการตอบของ AI",
+          tableHtml(["หัวข้อ","เนื้อหา","สถานะ","จัดการ"], rows, "ยังไม่มีข้อมูลความรู้"))}`;
+      $("#addKnowledge").addEventListener("click", () => editKnowledge());
+      $$("[data-knowledge-edit]").forEach(button => button.addEventListener("click", () => {
+        editKnowledge(items.find(item => item.knowledgeId === button.dataset.knowledgeEdit));
+      }));
+      $$("[data-knowledge-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("knowledge.delete", {knowledgeId:button.dataset.knowledgeDelete}, "ลบข้อมูลความรู้นี้?");
+      }));
+    }
+
+    async function editKnowledge(item = {}) {
+      const result = await modalForm("Knowledge Base", `
+        ${field("หมวดหมู่", "category", item.category || "ทั่วไป")}
+        ${field("ลำดับความสำคัญ", "priority", item.priority || 0, "number")}
+        ${field("หัวข้อ", "title", item.title || "", "text", {full:true,required:true})}
+        ${field("เนื้อหา", "content", item.content || "", "textarea", {full:true,required:true})}
+        ${field("คำค้น คั่นด้วยจุลภาค", "keywords", item.keywords || "", "text", {full:true})}
+        <div class="field full">${checkbox("เปิดใช้งาน", "active", item.active !== false)}</div>
+      `);
+      if (!result) return;
+      await callApi("knowledge.save", {
+        knowledgeId: item.knowledgeId || "",
+        category: result.category,
+        priority: Number(result.priority),
+        title: result.title,
+        content: result.content,
+        keywords: result.keywords,
+        active: Boolean(result.active)
+      });
+      notify("บันทึกข้อมูลแล้ว");
+      navigate("knowledge");
+    }
+
+    async function renderFaq(root) {
+      const result = await callApi("faq.list");
+      const items = result.faqs || [];
+      const rows = items.map(item => `<tr>
+        <td>${escapeHtml(item.question)}</td>
+        <td>${escapeHtml(String(item.answer || "").slice(0, 130))}</td>
+        <td>
+          <button class="icon-btn" data-faq-edit="${escapeHtml(item.faqId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-faq-delete="${escapeHtml(item.faqId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">เก็บคำถามและคำตอบที่พบบ่อยเพื่อให้ AI ใช้อ้างอิง</span>
+          <button class="btn btn-primary" id="addFaq"><i class="fa-solid fa-plus"></i> เพิ่ม FAQ</button>
+        </div>
+        ${panel("คำถามที่พบบ่อย", "FAQ ของร้าน",
+          tableHtml(["คำถาม","คำตอบ","จัดการ"], rows, "ยังไม่มี FAQ"))}`;
+      $("#addFaq").addEventListener("click", () => editFaq());
+      $$("[data-faq-edit]").forEach(button => button.addEventListener("click", () => {
+        editFaq(items.find(item => item.faqId === button.dataset.faqEdit));
+      }));
+      $$("[data-faq-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("faq.delete", {faqId:button.dataset.faqDelete}, "ลบ FAQ นี้?");
+      }));
+    }
+
+    async function editFaq(item = {}) {
+      const result = await modalForm("คำถามที่พบบ่อย", `
+        ${field("คำถาม", "question", item.question || "", "text", {full:true,required:true})}
+        ${field("คำตอบ", "answer", item.answer || "", "textarea", {full:true,required:true})}
+        ${field("คำค้น", "keywords", item.keywords || "", "text", {full:true})}
+        <div class="field full">${checkbox("เปิดใช้งาน", "active", item.active !== false)}</div>
+      `);
+      if (!result) return;
+      await callApi("faq.save", {
+        faqId: item.faqId || "",
+        question: result.question,
+        answer: result.answer,
+        keywords: result.keywords,
+        active: Boolean(result.active)
+      });
+      notify("บันทึก FAQ แล้ว");
+      navigate("faq");
+    }
+
+    async function renderPlayground(root) {
+      const [settings, promptResult] = await Promise.all([
+        callApi("settings.get"),
+        callApi("prompts.list")
+      ]);
+      const prompts = promptResult.prompts || [];
+      const activePrompt = promptResult.activePrompt || prompts.find(item => item.active === true || String(item.active) === "true") || {};
+      const promptOptions = [{value:"",label:"ใช้ Prompt ที่กำลัง Active"}].concat(
+        prompts.map(item => ({value:item.promptId,label:item.name || item.promptId}))
+      );
+      root.innerHTML = `
+        <div class="notice">หน้านี้เรียก API <strong>ai.playground</strong> ใน Code.gs โดยตรง ผลทดสอบจะถูกบันทึกลงแท็บ AI_TEST_LOGS และไม่ส่งข้อความไปยัง LINE</div>
+        <div class="grid grid-2" style="margin-top:15px">
+          ${panel("ทดลองสนทนากับ AI", "ทดสอบโมเดลหลัก และสลับไป Gemini อัตโนมัติเมื่อจำเป็น", `
+            <form id="playgroundForm" class="grid">
+              ${field("Prompt", "promptId", "", "select", {options:promptOptions,full:true})}
+              ${field("คำถามทดสอบ", "message", "มีเมนูอะไรบ้าง ขอแนะนำเมนูหน่อยค่ะ", "textarea", {full:true,required:true})}
+              <button class="btn btn-primary"><i class="fa-solid fa-flask"></i> ทดลองให้ AI ตอบ</button>
+            </form>
+          `)}
+          ${panel("ข้อมูลโมเดล", "ค่าที่ใช้ในระบบปัจจุบัน", `
+            <div class="stat-label">โมเดลหลัก · Grok</div>
+            <div class="stat-value" style="font-size:25px">${escapeHtml(settings.grokModel || "grok-4.7")}</div>
+            <div class="divider"></div>
+            <div class="stat-label">โมเดลสำรอง · Gemini</div>
+            <div class="stat-value" style="font-size:20px">${escapeHtml(settings.geminiModel || "-")}</div>
+            <div class="divider"></div>
+            <div class="small muted">Prompt ที่ Active</div>
+            <strong>${escapeHtml(activePrompt.name || "ยังไม่มี Prompt")}</strong>
+            <div class="small muted" style="margin-top:9px">การทดสอบนี้ใช้เมนูอาหารและ Knowledge Base ที่บันทึกไว้ใน Google Sheets</div>
+          `)}
+        </div>
+        <div id="playgroundResult" style="margin-top:15px"></div>`;
+
+      $("#playgroundForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        const values = formValues(event.currentTarget);
+        const selectedPrompt = prompts.find(item => item.promptId === values.promptId);
+        const payload = { message: values.message };
+        if (selectedPrompt) {
+          payload.promptId = selectedPrompt.promptId;
+          payload.systemPrompt = selectedPrompt.systemPrompt || "";
+        }
+        const resultNode = $("#playgroundResult");
+        resultNode.innerHTML = `<div class="panel"><div class="small muted"><i class="fa-solid fa-spinner fa-spin"></i> AI กำลังประมวลผล</div></div>`;
+        try {
+          const response = await callApi("ai.playground", payload, {timeoutMs:180000});
+          const answer = response.result || {};
+          resultNode.innerHTML = panel("ผลการทดลอง", `${escapeHtml(response.provider || "AI")} · ${escapeHtml(response.model || "-")}${response.fallbackUsed ? " · ใช้โมเดลสำรอง" : " · โมเดลหลัก"} · ${Number(response.durationMs || 0).toLocaleString("th-TH")} ms`, `
+            <div style="white-space:pre-wrap;line-height:1.55">${escapeHtml(answer.reply || "ไม่มีข้อความตอบกลับ")}</div>
+            <div class="divider"></div>
+            <div class="small muted">Intent: ${escapeHtml(answer.intent || "general")} · Handover: ${answer.handoverRequested ? "Yes" : "No"}</div>
+            ${answer.menuItemIds && answer.menuItemIds.length ? `<div class="small muted">Menu IDs: ${escapeHtml(answer.menuItemIds.join(", "))}</div>` : ""}
+            <div class="small muted" style="margin-top:6px">Test ID: ${escapeHtml(response.testId || "-")}</div>
+          `);
+        } catch (error) {
+          resultNode.innerHTML = `<div class="notice warning">${escapeHtml(error.message || error)}</div>`;
+        }
+      });
+    }
+
+    /* -----------------------------------------------------------------------
+       Welcome message management
+       -------------------------------------------------------------------- */
+
+    function welcomeItemMarkup(item, index) {
+      const payload = item.payload || parseJson(item.payloadJson, {});
+      const type = item.messageType || payload.type || "text";
+      const typeName = type === "flex" ? "Flex Message" : type === "image" ? "รูปภาพ" : "ข้อความ";
+      let preview = type === "text" ? payload.text : type === "image" ? payload.originalContentUrl : (payload.altText || "Flex Contents");
+      return `<div class="welcome-item" data-welcome-index="${index}">
+        <div class="sequence-number">${index + 1}</div>
+        <div>
+          <strong>${typeName}</strong>
+          <div class="small muted">${escapeHtml(String(preview || "").slice(0, 110))}</div>
+          <input type="hidden" class="welcome-id" value="${escapeHtml(item.welcomeMessageId || "")}">
+          <input type="hidden" class="welcome-type" value="${escapeHtml(type)}">
+          <textarea class="welcome-payload hidden">${escapeHtml(JSON.stringify(payload))}</textarea>
+          <label class="check-row small"><input class="welcome-active" type="checkbox" ${item.active === false ? "" : "checked"}> เปิดใช้งาน</label>
+        </div>
+        <div class="item-actions table-actions">
+          <button class="icon-btn" data-welcome-edit="${index}" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-welcome-up="${index}" title="เลื่อนขึ้น"><i class="fa-solid fa-arrow-up"></i></button>
+          <button class="icon-btn" data-welcome-down="${index}" title="เลื่อนลง"><i class="fa-solid fa-arrow-down"></i></button>
+          <button class="icon-btn" data-welcome-remove="${index}" title="ลบ"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      </div>`;
+    }
+
+    function readWelcomeItems() {
+      return $$(".welcome-item", $("#welcomeItems")).map((element, index) => ({
+        welcomeMessageId: $(".welcome-id", element).value,
+        sequence: index + 1,
+        messageType: $(".welcome-type", element).value,
+        payload: parseJson($(".welcome-payload", element).value, {}),
+        active: $(".welcome-active", element).checked
+      }));
+    }
+
+    function bindWelcomeActions() {
+      $$("[data-welcome-edit]").forEach(button => button.addEventListener("click", () => {
+        editWelcomeItem(Number(button.dataset.welcomeEdit));
+      }));
+      $$("[data-welcome-remove]").forEach(button => button.addEventListener("click", () => {
+        const items = readWelcomeItems();
+        items.splice(Number(button.dataset.welcomeRemove), 1);
+        $("#welcomeItems").innerHTML = items.length
+          ? items.map(welcomeItemMarkup).join("")
+          : '<div class="empty"><i class="fa-regular fa-message"></i><strong>ยังไม่มีข้อความต้อนรับ</strong></div>';
+        bindWelcomeActions();
+      }));
+      $$("[data-welcome-up], [data-welcome-down]").forEach(button => button.addEventListener("click", () => {
+        const index = Number(button.dataset.welcomeUp || button.dataset.welcomeDown);
+        const target = index + (button.hasAttribute("data-welcome-up") ? -1 : 1);
+        const items = readWelcomeItems();
+        if (target < 0 || target >= items.length) return;
+        [items[index], items[target]] = [items[target], items[index]];
+        $("#welcomeItems").innerHTML = items.map(welcomeItemMarkup).join("");
+        bindWelcomeActions();
+      }));
+    }
+
+    async function renderWelcome(root) {
+      const result = await callApi("welcome.get");
+      state.welcomeMessages = result.messages || [];
+      const settings = result.settings || {};
+      root.innerHTML = `
+        <div class="grid grid-2">
+          ${panel("ตั้งค่าการต้อนรับ", "ส่งชุดข้อความทันทีเมื่อได้รับ Follow Event", `
+            <form id="welcomeSettings" class="grid">
+              ${checkbox("เปิดใช้งานข้อความต้อนรับ", "enabled", settings.enabled !== false)}
+              ${checkbox("ส่งเฉพาะการเพิ่มเพื่อนครั้งแรก", "sendOnlyFirstFollow", settings.sendOnlyFirstFollow !== false)}
+              ${field("จำนวน Message Objects สูงสุด (1-5)", "maxReplyMessages", settings.maxReplyMessages || 5, "number")}
+              <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
+            </form>
+          `)}
+          ${panel("ข้อจำกัด LINE", "การส่งข้อความตอบกลับใน Follow Event", `
+            <div class="notice">LINE จำกัดไม่เกิน 5 Message Objects ต่อหนึ่ง Reply Request สามารถรวมการ์ดหลายใบเป็น Flex Carousel เพื่อลดจำนวน Message Objects ได้</div>
+            <div class="small muted" style="margin-top:9px">ควรปิด Greeting Message ใน LINE OA Manager หากใช้ข้อความต้อนรับจากระบบนี้</div>
+          `)}
+        </div>
+        <div style="margin-top:15px">
+          ${panel("รายการข้อความต้อนรับ", "เพิ่ม Text, Image และ Flex Message แล้วจัดลำดับการส่ง", `
+            <div class="toolbar-right" style="margin-bottom:12px">
+              <button class="btn btn-secondary" id="addWelcomeText"><i class="fa-solid fa-plus"></i> เพิ่ม Text</button>
+              <button class="btn btn-secondary" id="addWelcomeImage"><i class="fa-regular fa-image"></i> เพิ่ม Image</button>
+              <button class="btn btn-secondary" id="addWelcomeFlex"><i class="fa-regular fa-clone"></i> เพิ่ม Flex</button>
+              <button class="btn btn-secondary" id="testWelcome"><i class="fa-solid fa-paper-plane"></i> ทดสอบส่ง</button>
+              <button class="btn btn-primary" id="saveWelcome"><i class="fa-solid fa-floppy-disk"></i> บันทึกชุดข้อความ</button>
+            </div>
+            <div class="grid" id="welcomeItems">
+              ${state.welcomeMessages.length
+                ? state.welcomeMessages.map(welcomeItemMarkup).join("")
+                : '<div class="empty"><i class="fa-regular fa-message"></i><strong>ยังไม่มีข้อความต้อนรับ</strong></div>'}
+            </div>
+          `)}
+        </div>`;
+      $("#welcomeSettings").addEventListener("submit", async event => {
+        event.preventDefault();
+        const settingsData = formValues(event.currentTarget);
+        settingsData.maxReplyMessages = Math.min(5, Math.max(1, Number(settingsData.maxReplyMessages || 5)));
+        await callApi("welcome.save", {settings:settingsData});
+        notify("บันทึกการตั้งค่าแล้ว");
+      });
+      $("#addWelcomeText").addEventListener("click", () => addWelcomeItem("text"));
+      $("#addWelcomeImage").addEventListener("click", () => addWelcomeItem("image"));
+      $("#addWelcomeFlex").addEventListener("click", () => addWelcomeItem("flex"));
+      $("#saveWelcome").addEventListener("click", saveWelcome);
+      $("#testWelcome").addEventListener("click", testWelcomeMessage);
+      bindWelcomeActions();
+    }
+
+    async function testWelcomeMessage() {
+      const result = await Swal.fire({
+        title:"ทดสอบส่งข้อความต้อนรับ",
+        input:"text",
+        inputLabel:"LINE User ID ผู้รับทดสอบ",
+        inputPlaceholder:"Uxxxxxxxxxxxxxxxx",
+        showCancelButton:true,
+        confirmButtonText:"ส่งทดสอบ",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445",
+        inputValidator:value => value ? undefined : "กรุณาระบุ LINE User ID"
+      });
+      if (!result.isConfirmed) return;
+      const response = await callApi("welcome.test",{userId:result.value});
+      notify(`ส่งข้อความทดสอบแล้ว ${response.sent || 0} รายการ`);
+    }
+
+    async function addWelcomeItem(type) {
+      let payload;
+      if (type === "text") {
+        const result = await Swal.fire({
+          title: "เพิ่มข้อความต้อนรับ",
+          input: "textarea",
+          inputPlaceholder: "พิมพ์ข้อความต้อนรับ",
+          showCancelButton: true,
+          confirmButtonText: "เพิ่มข้อความ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#205445"
+        });
+        if (!result.isConfirmed || !result.value) return;
+        payload = {type:"text", text:result.value};
+      } else if (type === "image") {
+        const result = await modalForm("เพิ่มรูปภาพต้อนรับ", `
+          <div class="field full"><label for="welcomeImageFile">เลือกรูปภาพจากเครื่อง</label><input id="welcomeImageFile" name="welcomeImageFile" type="file" accept="image/jpeg,image/png" required><div class="field-help">รองรับ JPG / PNG ขนาดไม่เกิน 8 MB</div></div>
+        `);
+        if (!result) return;
+        const imageFile = result.welcomeImageFile;
+        if (!(imageFile instanceof File) || !imageFile.size) return showError(new Error("กรุณาเลือกรูปภาพจากเครื่อง"));
+        try {
+          Swal.fire({title:"กำลังอัปโหลดรูปภาพ",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+          const uploaded = await uploadImage(imageFile);
+          Swal.close();
+          payload = {type:"image", originalContentUrl:uploaded.image.imageUrl, previewImageUrl:uploaded.image.thumbnailUrl || uploaded.image.imageUrl};
+        } catch (error) { Swal.close(); return showError(error); }
+      } else {
+        const defaultContents = {
+          type:"bubble",
+          body:{type:"box",layout:"vertical",contents:[
+            {type:"text",text:"ก๋วยเตี๋ยวโบราณ by เจ๊อ้น",weight:"bold",size:"xl"},
+            {type:"text",text:"ยินดีต้อนรับและขอบคุณที่เพิ่มเพื่อน",wrap:true,margin:"md"}
+          ]}
+        };
+        const result = await modalForm("เพิ่ม Flex Message", `
+          ${field("Alt Text", "altText", "ข้อความต้อนรับจากร้าน", "text", {full:true})}
+          ${field("Flex Contents JSON", "contentsJson", JSON.stringify(defaultContents,null,2), "textarea", {full:true,required:true})}
+        `);
+        if (!result) return;
+        const contents = parseJson(result.contentsJson, null);
+        if (!contents) return showError(new Error("Flex JSON ไม่ถูกต้อง"));
+        payload = {type:"flex", altText:result.altText, contents};
+      }
+      const items = readWelcomeItems();
+      items.push({sequence:items.length+1,messageType:type,payload,active:true});
+      $("#welcomeItems").innerHTML = items.map(welcomeItemMarkup).join("");
+      bindWelcomeActions();
+    }
+
+    async function editWelcomeItem(index) {
+      const items = readWelcomeItems();
+      const item = items[index];
+      if (!item) return;
+      let fieldsHtml = "";
+      if (item.messageType === "text") {
+        fieldsHtml = field("ข้อความ", "text", item.payload.text || "", "textarea", {full:true,required:true});
+      } else if (item.messageType === "image") {
+        fieldsHtml = `<div class="field full"><label>รูปภาพปัจจุบัน</label><div class="menu-upload-preview">${safeImage(item.payload.previewImageUrl || item.payload.originalContentUrl, "รูปภาพต้อนรับ") || "ยังไม่มีรูปภาพ"}</div></div>
+          <div class="field full"><label for="welcomeImageFile">เปลี่ยนรูปภาพจากเครื่อง (ไม่บังคับ)</label><input id="welcomeImageFile" name="welcomeImageFile" type="file" accept="image/jpeg,image/png"><div class="field-help">ไม่เลือกไฟล์เพื่อใช้รูปเดิมต่อไป</div></div>`;
+      } else {
+        fieldsHtml = field("Alt Text", "altText", item.payload.altText || "", "text", {full:true}) +
+          field("Flex Contents JSON", "contentsJson", JSON.stringify(item.payload.contents || {},null,2), "textarea", {full:true,required:true});
+      }
+      const result = await modalForm("แก้ไขข้อความต้อนรับ", fieldsHtml);
+      if (!result) return;
+      if (item.messageType === "text") item.payload.text = result.text;
+      if (item.messageType === "image") {
+        const imageFile = result.welcomeImageFile;
+        if (imageFile instanceof File && imageFile.size) {
+          try {
+            Swal.fire({title:"กำลังอัปโหลดรูปภาพ",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+            const uploaded = await uploadImage(imageFile);
+            Swal.close();
+            item.payload.originalContentUrl = uploaded.image.imageUrl;
+            item.payload.previewImageUrl = uploaded.image.thumbnailUrl || uploaded.image.imageUrl;
+          } catch (error) { Swal.close(); return showError(error); }
+        }
+      }
+      if (item.messageType === "flex") {
+        item.payload.altText = result.altText;
+        item.payload.contents = parseJson(result.contentsJson, null);
+        if (!item.payload.contents) return showError(new Error("Flex JSON ไม่ถูกต้อง"));
+      }
+      items[index] = item;
+      $("#welcomeItems").innerHTML = items.map(welcomeItemMarkup).join("");
+      bindWelcomeActions();
+    }
+
+    async function saveWelcome() {
+      const formData = formValues($("#welcomeSettings"));
+      formData.maxReplyMessages = Math.min(5, Math.max(1, Number(formData.maxReplyMessages || 5)));
+      const messages = readWelcomeItems();
+      if (messages.length > formData.maxReplyMessages) {
+        return showError(new Error("จำนวนข้อความเกินขีดจำกัดที่กำหนด"));
+      }
+      await callApi("welcome.save", {settings:formData,messages});
+      notify("บันทึกชุดข้อความต้อนรับแล้ว");
+    }
+
+    /* -----------------------------------------------------------------------
+       Flex Message templates
+       -------------------------------------------------------------------- */
+
+    async function renderFlex(root) {
+      const result = await callApi("flex.list");
+      state.flexTemplates = result.templates || [];
+      const cards = state.flexTemplates.map(item => `
+        <div class="template-card">
+          <div class="panel-header">
+            <div><strong>${escapeHtml(item.name)}</strong><div class="small muted">${escapeHtml(item.category || "GENERAL")}</div></div>
+            ${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}
+          </div>
+          <div class="template-preview"><pre style="white-space:pre-wrap;font-size:13px;margin:0">${escapeHtml(JSON.stringify(item.contents || {},null,2))}</pre></div>
+          <div class="toolbar-right" style="margin-top:10px">
+            <button class="btn btn-secondary btn-small" data-flex-edit="${escapeHtml(item.templateId)}"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+            <button class="btn btn-secondary btn-small" data-flex-send="${escapeHtml(item.templateId)}"><i class="fa-solid fa-paper-plane"></i> ส่งให้สมาชิก</button>
+            <button class="icon-btn" data-flex-delete="${escapeHtml(item.templateId)}"><i class="fa-regular fa-trash-can"></i></button>
+          </div>
+        </div>`).join("");
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">รองรับ Bubble และ Carousel โดยใส่ Flex Contents JSON ตาม LINE API</span>
+          <button class="btn btn-primary" id="addFlex"><i class="fa-solid fa-plus"></i> สร้าง Flex Template</button>
+        </div>
+        <div class="grid grid-2">${cards || '<div class="empty"><i class="fa-regular fa-clone"></i><strong>ยังไม่มี Flex Template</strong></div>'}</div>`;
+      $("#addFlex").addEventListener("click", () => editFlex());
+      $$("[data-flex-edit]").forEach(button => button.addEventListener("click", () => {
+        editFlex(state.flexTemplates.find(item => item.templateId === button.dataset.flexEdit));
+      }));
+      $$("[data-flex-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("flex.delete", {templateId:button.dataset.flexDelete}, "ลบ Flex Template นี้?");
+      }));
+      $$("[data-flex-send]").forEach(button => button.addEventListener("click", () => sendFlex(button.dataset.flexSend)));
+      $$("[data-flex-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("flex.delete",{templateId:button.dataset.flexDelete},"ลบ Flex Template นี้?");
+      }));
+    }
+
+    async function editFlex(item = {}) {
+      const defaultContents = {
+        type:"bubble",
+        body:{type:"box",layout:"vertical",contents:[
+          {type:"text",text:"ก๋วยเตี๋ยวโบราณ by เจ๊อ้น",weight:"bold",size:"xl"},
+          {type:"text",text:"รายละเอียดข้อความ",wrap:true,margin:"md"}
+        ]}
+      };
+      const result = await modalForm("Flex Message Template", `
+        ${field("ชื่อ Template", "name", item.name || "", "text", {full:true,required:true})}
+        ${field("Alt Text", "altText", item.altText || "ข้อความจากก๋วยเตี๋ยวโบราณ by เจ๊อ้น", "text", {full:true,required:true})}
+        ${field("หมวดหมู่", "category", item.category || "GENERAL")}
+        ${field("Flex Contents JSON", "contentsJson", JSON.stringify(item.contents || defaultContents,null,2), "textarea", {full:true,required:true})}
+        <div class="field full">${checkbox("เปิดใช้งาน", "active", item.active !== false)}</div>
+      `);
+      if (!result) return;
+      const contents = parseJson(result.contentsJson, null);
+      if (!contents) return showError(new Error("Flex JSON ไม่ถูกต้อง"));
+      await callApi("flex.save", {
+        templateId:item.templateId || "",
+        name:result.name,
+        altText:result.altText,
+        category:result.category,
+        contents,
+        active:Boolean(result.active)
+      });
+      notify("บันทึก Flex Template แล้ว");
+      navigate("flex");
+    }
+
+    async function sendFlex(templateId) {
+      if (!state.selectedMembers.size) {
+        navigate("members");
+        return notify("ไปที่สมาชิก LINE แล้วเลือกผู้รับก่อน", "info");
+      }
+      if (!(await confirmAction("ยืนยันส่ง Flex", `ส่งให้สมาชิก ${state.selectedMembers.size} คนหรือไม่`, "ส่งข้อความ"))) return;
+      const result = await callApi("flex.send", {
+        userIds:Array.from(state.selectedMembers),
+        templateId
+      });
+      Swal.fire({
+        icon:result.failed ? "warning" : "success",
+        title:"ผลการส่ง Flex",
+        text:`เลือก ${result.selected || 0} คน · ส่งสำเร็จ ${result.sent || 0} คน · ผิดพลาด ${result.failed || 0} คน`
+      });
+    }
+
+    /* -----------------------------------------------------------------------
+       LINE friends, selected recipients and member profile
+       -------------------------------------------------------------------- */
+
+    async function renderMembers(root) {
+      const result = await callApi("members.list", {limit:500});
+      state.members = result.members || [];
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <div class="toolbar-left">
+            <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input class="control" id="memberQuery" placeholder="ค้นหาชื่อหรือ User ID"></div>
+            <button class="btn btn-secondary" id="searchMembers"><i class="fa-solid fa-search"></i> ค้นหา</button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-secondary" id="syncMembers"><i class="fa-solid fa-rotate"></i> Sync รายชื่อ</button>
+            <button class="btn btn-secondary" id="selectVisibleMembers"><i class="fa-regular fa-square-check"></i> เลือกทั้งหมดที่แสดง</button>
+            <button class="btn btn-primary" id="sendSelectedMembers"><i class="fa-solid fa-paper-plane"></i> ส่ง Flex (${state.selectedMembers.size})</button>
+          </div>
+        </div>
+        <div class="notice warning" style="margin-bottom:13px">
+          LINE Followers API สำหรับดึงเพื่อนเก่าทั้งหมดใช้ได้เฉพาะบัญชี LINE OA ที่ผ่านเงื่อนไข Verified หรือ Premium
+          บัญชีที่ไม่รองรับจะมีรายชื่อจาก Follow Event และข้อความที่ลูกค้าส่งเข้ามาเท่านั้น
+        </div>
+        ${panel("รายชื่อสมาชิก LINE", `ข้อมูลในฐานระบบ ${result.total || 0} รายชื่อ`, renderMemberTable(state.members))}
+      `;
+      $("#searchMembers").addEventListener("click", searchMembers);
+      $("#memberQuery").addEventListener("keydown", event => {
+        if (event.key === "Enter") searchMembers();
+      });
+      $("#syncMembers").addEventListener("click", syncMembers);
+      $("#sendSelectedMembers").addEventListener("click", chooseFlexForMembers);
+      $("#selectVisibleMembers").addEventListener("click", () => {
+        const inputs = $$(".member-check", root);
+        const shouldSelect = inputs.some(input => !input.checked);
+        inputs.forEach(input => {
+          input.checked = shouldSelect;
+          if (shouldSelect) state.selectedMembers.add(input.dataset.userId);
+          else state.selectedMembers.delete(input.dataset.userId);
+        });
+        $("#sendSelectedMembers").innerHTML = `<i class="fa-solid fa-paper-plane"></i> ส่ง Flex (${state.selectedMembers.size})`;
+      });
+      bindMemberActions(root);
+    }
+
+    function renderMemberTable(members) {
+      const rows = members.map(member => `<tr>
+        <td><input type="checkbox" class="member-check" data-user-id="${escapeHtml(member.userId)}"
+          ${state.selectedMembers.has(member.userId) ? "checked" : ""}></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:9px">
+            <div class="avatar">${member.pictureUrl ? safeImage(member.pictureUrl, member.displayName) : '<i class="fa-solid fa-user"></i>'}</div>
+            <div><strong>${escapeHtml(member.displayName || "ไม่ทราบชื่อ")}</strong>
+              <div class="small muted">${escapeHtml(member.userId)}</div>
+            </div>
+          </div>
+        </td>
+        <td>${dateTime(member.followedAt)}</td>
+        <td>${escapeHtml(parseJson(member.tagsJson, []).join(", ") || "-")}</td>
+        <td>${member.isBlocked ? statusBadge("CANCELLED") : statusBadge("SENT")}</td>
+        <td>
+          <div class="table-actions">
+            <button class="icon-btn" data-member-profile="${escapeHtml(member.userId)}" title="ดูโปรไฟล์"><i class="fa-regular fa-id-card"></i></button>
+            <button class="icon-btn" data-member-edit="${escapeHtml(member.userId)}" title="แก้ไขข้อมูล"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn" data-member-tags="${escapeHtml(member.userId)}" title="จัดการ Tags"><i class="fa-solid fa-tags"></i></button>
+          </div>
+        </td>
+      </tr>`);
+      return tableHtml(["เลือก","สมาชิก","วันที่เพิ่มเพื่อน","Tags","สถานะ","ข้อมูล"], rows, "ยังไม่มีสมาชิก");
+    }
+
+    function bindMemberActions(root = document) {
+      $$(".member-check", root).forEach(input => input.addEventListener("change", () => {
+        if (input.checked) state.selectedMembers.add(input.dataset.userId);
+        else state.selectedMembers.delete(input.dataset.userId);
+        const button = $("#sendSelectedMembers");
+        if (button) button.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ส่ง Flex (${state.selectedMembers.size})`;
+      }));
+      $$("[data-member-profile]", root).forEach(button => button.addEventListener("click", () => showMemberProfile(button.dataset.memberProfile)));
+      $$("[data-member-edit]", root).forEach(button => button.addEventListener("click", () => editMember(button.dataset.memberEdit)));
+      $$("[data-member-tags]", root).forEach(button => button.addEventListener("click", () => editMemberTags(button.dataset.memberTags)));
+    }
+
+    async function searchMembers() {
+      const result = await callApi("members.list", {
+        limit:500,
+        query:$("#memberQuery").value.trim()
+      });
+      state.members = result.members || [];
+      const tablePanel = $$("#pageContent .panel").at(-1);
+      if (tablePanel) {
+        const oldTable = $(".table-wrap", tablePanel);
+        const oldEmpty = $(".empty", tablePanel);
+        if (oldTable) oldTable.outerHTML = renderMemberTable(state.members);
+        else if (oldEmpty) oldEmpty.outerHTML = renderMemberTable(state.members);
+        else tablePanel.insertAdjacentHTML("beforeend", renderMemberTable(state.members));
+      }
+      bindMemberActions($("#pageContent"));
+    }
+
+    async function syncMembers() {
+      try {
+        const result = await callApi("members.sync", {limit:100});
+        notify(result.message || `Sync สำเร็จ ${result.imported || 0} รายชื่อ`);
+        navigate("members");
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    async function showMemberProfile(userId) {
+      const result = await callApi("members.profile", {userId});
+      Swal.fire({
+        title:"ข้อมูลสมาชิก LINE",
+        width:700,
+        html:`<pre style="text-align:left;white-space:pre-wrap;max-height:60vh;overflow:auto">${escapeHtml(JSON.stringify(result,null,2))}</pre>`
+      });
+    }
+
+    async function editMember(userId) {
+      const member = state.members.find(item => item.userId === userId) || {};
+      const result = await modalForm("แก้ไขข้อมูลสมาชิก", `
+        ${field("LINE User ID","userId",userId,"text",{full:true})}
+        ${field("ชื่อสมาชิก","displayName",member.displayName || "","text",{full:true})}
+        ${field("หมายเหตุ","note",member.note || "","textarea",{full:true})}
+        ${field("Tags (คั่นด้วยจุลภาค)","tagsText",parseJson(member.tagsJson,[]).join(", "),"text",{full:true})}
+      `);
+      if (!result) return;
+      await callApi("members.save", {
+        userId:result.userId,
+        displayName:result.displayName,
+        note:result.note,
+        tags:result.tagsText.split(",").map(tag => tag.trim()).filter(Boolean)
+      });
+      notify("บันทึกข้อมูลสมาชิกแล้ว");
+      navigate("members");
+    }
+
+    async function editMemberTags(userId) {
+      const member = state.members.find(item => item.userId === userId) || {};
+      const result = await modalForm("จัดการ Tags สมาชิก", `
+        ${field("Tags (คั่นด้วยจุลภาค)","tagsText",parseJson(member.tagsJson,[]).join(", "),"text",{full:true})}
+      `);
+      if (!result) return;
+      await callApi("members.tag", {
+        userId,
+        tags:result.tagsText.split(",").map(tag => tag.trim()).filter(Boolean)
+      });
+      notify("อัปเดต Tags แล้ว");
+      navigate("members");
+    }
+
+    async function chooseFlexForMembers() {
+      if (!state.selectedMembers.size) {
+        return showError(new Error("กรุณาเลือกสมาชิกอย่างน้อย 1 คน"));
+      }
+      const result = await callApi("flex.list", {activeOnly:true});
+      const templates = result.templates || [];
+      if (!templates.length) return showError(new Error("ยังไม่มี Flex Template"));
+      const selectOptions = Object.fromEntries(templates.map(item => [item.templateId,item.name]));
+      const selected = await Swal.fire({
+        title:"เลือก Flex Message",
+        input:"select",
+        inputOptions:selectOptions,
+        inputPlaceholder:"เลือก Template",
+        showCancelButton:true,
+        confirmButtonText:"ส่งให้สมาชิก",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445"
+      });
+      if (!selected.isConfirmed || !selected.value) return;
+      if (!(await confirmAction("ยืนยันส่ง Flex", `ส่งให้สมาชิก ${state.selectedMembers.size} คนหรือไม่`, "ส่งข้อความ"))) return;
+      const sent = await callApi("flex.send", {
+        userIds:Array.from(state.selectedMembers),
+        templateId:selected.value
+      });
+      Swal.fire({
+        icon:sent.failed ? "warning" : "success",
+        title:"สรุปผลการส่ง",
+        text:`ส่งสำเร็จ ${sent.sent || 0} คน · ไม่สำเร็จ ${sent.failed || 0} คน`
+      });
+    }
+
+    /* -----------------------------------------------------------------------
+       Live Chat: optimistic rendering for agent messages
+       -------------------------------------------------------------------- */
+
+    async function renderChat(root) {
+      const result = await callApi("chat.list", {limit:200});
+      const chats = result.chats || [];
+      if (state.chatRefreshTimer) clearInterval(state.chatRefreshTimer);
+      root.innerHTML = `
+        <div class="split-layout">
+          <section class="chat-panel">
+            <div class="panel-header" style="padding:12px;border-bottom:1px solid var(--line);margin:0">
+              <div><div class="panel-title">บทสนทนา</div><div class="small muted">${chats.length} ห้องแชท</div></div>
+              <button class="icon-btn" id="refreshChatList" title="รีเฟรช"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+            <div class="chat-list" id="chatList">
+              ${chats.map(chatListItem).join("") || '<div class="empty"><strong>ยังไม่มีบทสนทนา</strong></div>'}
+            </div>
+          </section>
+          <section class="chat-panel chat-thread" id="chatThread">
+            <div class="empty"><i class="fa-solid fa-comments"></i><strong>เลือกบทสนทนาที่ต้องการดูแล</strong></div>
+          </section>
+        </div>`;
+      $("#refreshChatList").addEventListener("click", refreshChatList);
+      bindChatList();
+      if (state.chatUserId) {
+        const current = chats.find(item => item.userId === state.chatUserId);
+        if (current) await openChat(state.chatUserId);
+      }
+      state.chatRefreshTimer = setInterval(async () => {
+        await refreshChatList();
+        await refreshActiveChatMessages();
+      }, 10000);
+    }
+
+    async function refreshActiveChatMessages() {
+      if (state.page !== "chat" || !state.chatUserId || !$("#chatMessages")) return;
+      try {
+        const result = await callApi("chat.messages", {userId:state.chatUserId,limit:100});
+        const messages = result.messages || [];
+        const currentLast = state.chatMessages.length
+          ? state.chatMessages[state.chatMessages.length - 1].messageId
+          : "";
+        const nextLast = messages.length ? messages[messages.length - 1].messageId : "";
+        if (currentLast !== nextLast || messages.length !== state.chatMessages.length) {
+          state.chatMessages = messages;
+          const container = $("#chatMessages");
+          if (container) {
+            container.innerHTML = messages.map(messageMarkup).join("");
+            container.scrollTop = container.scrollHeight;
+          }
+        }
+      } catch (error) {
+        console.warn("Active chat refresh failed", error);
+      }
+    }
+
+    function chatListItem(chat) {
+      const member = chat.member || {};
+      const name = member.displayName || chat.userId;
+      return `<div class="chat-list-item ${state.chatUserId === chat.userId ? "selected" : ""}" data-chat-user="${escapeHtml(chat.userId)}">
+        <div class="avatar">${member.pictureUrl ? safeImage(member.pictureUrl,name) : '<i class="fa-solid fa-user"></i>'}</div>
+        <div class="chat-list-main">
+          <div class="chat-list-top"><span class="chat-name">${escapeHtml(name)}</span><span class="small muted">${dateTime(chat.lastMessageAt)}</span></div>
+          <div class="chat-preview">${escapeHtml(chat.assignedAgent || chat.replyMode || "AI")}</div>
+          ${statusBadge(chat.replyMode)}
+        </div>
+      </div>`;
+    }
+
+    function bindChatList() {
+      $$("[data-chat-user]").forEach(item => item.addEventListener("click", () => openChat(item.dataset.chatUser)));
+    }
+
+    async function refreshChatList() {
+      if (state.page !== "chat") return;
+      try {
+        const result = await callApi("chat.list", {limit:200});
+        $("#chatList").innerHTML = (result.chats || []).map(chatListItem).join("") || '<div class="empty">ยังไม่มีบทสนทนา</div>';
+        bindChatList();
+      } catch (error) {
+        console.warn("Chat list refresh failed", error);
+      }
+    }
+
+    async function openChat(userId) {
+      state.chatUserId = userId;
+      const [listResult, messageResult] = await Promise.all([
+        callApi("chat.list", {limit:200}),
+        callApi("chat.messages", {userId,limit:100})
+      ]);
+      const chat = (listResult.chats || []).find(item => item.userId === userId) || {userId,replyMode:"AI"};
+      state.chatMode = chat.replyMode || "AI";
+      state.chatMessages = messageResult.messages || [];
+      renderChatThread(chat);
+      $$(".chat-list-item").forEach(item => item.classList.toggle("selected", item.dataset.chatUser === userId));
+    }
+
+    function messageMarkup(message) {
+      const sender = String(message.senderType || "").toUpperCase();
+      const outgoing = ["ADMIN","AI","BOT"].includes(sender);
+      const payload = parseJson(message.payloadJson, {}) || {};
+      let content = "";
+      if (message.messageType === "image") {
+        const imageUrl = payload.previewImageUrl || payload.originalContentUrl || "";
+        content = /^https:\/\//i.test(imageUrl)
+          ? `<a href="${escapeHtml(payload.originalContentUrl || imageUrl)}" target="_blank" rel="noopener"><img class="chat-media-preview" src="${escapeHtml(imageUrl)}" alt="รูปภาพที่ส่ง"></a>`
+          : `<div>📷 ${escapeHtml(message.text || "รูปภาพ")}</div>`;
+      } else if (message.messageType === "file" && payload.file) {
+        const file = payload.file;
+        const fileUrl = file.url || file.downloadUrl || "";
+        content = `<div class="chat-file-card"><i class="fa-regular fa-file-lines"></i><div><a href="${escapeHtml(fileUrl)}" target="_blank" rel="noopener">${escapeHtml(file.name || "เปิดไฟล์แนบ")}</a><div class="small muted">${escapeHtml(file.mimeType || "ไฟล์แนบ")}</div></div></div>`;
+      } else if (message.messageType === "flex") {
+        content = `<div class="chat-flex-card"><div class="small muted"><i class="fa-regular fa-clone"></i> Flex Message</div><strong>${escapeHtml(payload.altText || message.text || "ข้อความแบบ Flex")}</strong></div>`;
+      } else {
+        content = escapeHtml(message.text || (message.messageType ? `[${message.messageType}]` : ""));
+      }
+      return `<div class="message-row ${outgoing ? "outgoing" : ""}">
+        <div class="bubble">
+          <div class="small muted">${escapeHtml(message.senderName || sender)}</div>
+          ${content}
+          <div class="message-meta">${dateTime(message.createdAt)} · ${escapeHtml(message.deliveryStatus || "")}</div>
+        </div>
+      </div>`;
+    }
+
+    function renderChatThread(chat) {
+      const member = chat.member || {};
+      const human = chat.replyMode === "HUMAN";
+      const thread = $("#chatThread");
+      if (!thread) return;
+      thread.innerHTML = `
+        <div class="chat-thread-head">
+          <div><strong>${escapeHtml(member.displayName || chat.userId)}</strong><div class="small muted">${escapeHtml(chat.userId)}</div></div>
+          <div class="toolbar-right">
+            ${statusBadge(chat.replyMode)}
+            ${human
+              ? '<button class="btn btn-secondary btn-small" id="returnAi"><i class="fa-solid fa-robot"></i> ส่งคืน AI</button><button class="btn btn-danger btn-small" id="closeChat"><i class="fa-solid fa-xmark"></i> ปิดแชท</button>'
+              : '<button class="btn btn-primary btn-small" id="takeOver"><i class="fa-solid fa-headset"></i> รับช่วง / หยุด AI</button>'}
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">${state.chatMessages.map(messageMarkup).join("")}</div>
+        <div class="chat-composer">
+          <textarea id="chatInput" class="control" placeholder="${human ? "พิมพ์ข้อความตอบลูกค้า..." : "กดรับช่วงสนทนาก่อนจึงจะส่งข้อความได้"}" ${human ? "" : "disabled"}></textarea>
+          <div class="chat-attachment-toolbar">
+            <span class="small muted">ไฟล์ทั่วไปจะส่งเป็นลิงก์ดาวน์โหลดจาก Google Drive</span>
+            <button class="btn btn-secondary btn-small" id="attachChatImage" ${human ? "" : "disabled"}><i class="fa-regular fa-image"></i> รูปภาพ</button>
+            <button class="btn btn-secondary btn-small" id="attachChatFile" ${human ? "" : "disabled"}><i class="fa-solid fa-paperclip"></i> แนบไฟล์</button>
+            <button class="btn btn-secondary btn-small" id="sendChatFlex" ${human ? "" : "disabled"}><i class="fa-regular fa-clone"></i> ส่ง Flex</button>
+            <button class="btn btn-secondary btn-small" id="sendChatMenuFlex" ${human ? "" : "disabled"}><i class="fa-solid fa-bowl-food"></i> ส่งเมนู Flex</button>
+            <input type="file" id="chatImageFile" class="hidden" accept="image/jpeg,image/png">
+            <input type="file" id="chatGeneralFile" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/csv,text/plain,application/zip">
+          </div>
+          <div class="chat-composer-footer">
+            <span class="small muted">${human ? "Enter เพื่อส่ง · Shift + Enter เพื่อขึ้นบรรทัดใหม่" : "AI จะหยุดตอบเมื่อแอดมินรับช่วง"}</span>
+            <button class="btn btn-primary" id="sendChat" ${human ? "" : "disabled"}><i class="fa-solid fa-paper-plane"></i> ส่งข้อความ</button>
+          </div>
+        </div>`;
+      $("#chatMessages").scrollTop = $("#chatMessages").scrollHeight;
+      $("#takeOver")?.addEventListener("click", takeOverChat);
+      $("#returnAi")?.addEventListener("click", returnChatToAi);
+      $("#closeChat")?.addEventListener("click", closeCurrentChat);
+      $("#sendChat")?.addEventListener("click", sendChatMessage);
+      $("#chatInput")?.addEventListener("keydown", event => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendChatMessage();
+        }
+      });
+      $("#attachChatImage")?.addEventListener("click", () => $("#chatImageFile").click());
+      $("#attachChatFile")?.addEventListener("click", () => $("#chatGeneralFile").click());
+      $("#chatImageFile")?.addEventListener("change", event => sendChatImageFile(event.target.files[0]));
+      $("#chatGeneralFile")?.addEventListener("change", event => sendChatGeneralFile(event.target.files[0]));
+      $("#sendChatFlex")?.addEventListener("click", sendChatFlexTemplate);
+      $("#sendChatMenuFlex")?.addEventListener("click", sendChatMenuFlex);
+    }
+
+    async function takeOverChat() {
+      const agentName = $("#agentName").value.trim() || "Ponlabat";
+      try {
+        await callApi("chat.accept", {userId:state.chatUserId,agentName});
+        notify("รับช่วงสนทนาแล้ว");
+        await openChat(state.chatUserId);
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    async function returnChatToAi() {
+      if (!(await confirmAction("ส่งคืนให้ AI", "AI จะกลับมาตอบข้อความใหม่จากลูกค้า", "ส่งคืนให้ AI"))) return;
+      await callApi("chat.mode", {
+        userId:state.chatUserId,
+        mode:"AI",
+        agentName:$("#agentName").value.trim() || "Ponlabat",
+        sendTransitionMessage:true
+      });
+      notify("ส่งคืนให้ AI แล้ว");
+      await openChat(state.chatUserId);
+    }
+
+    async function closeCurrentChat() {
+      if (!(await confirmAction("ปิดการสนทนา","ต้องการปิดห้องแชทนี้หรือไม่","ปิดแชท"))) return;
+      await callApi("chat.close", {
+        userId:state.chatUserId,
+        agentName:$("#agentName").value.trim() || "Ponlabat"
+      });
+      notify("ปิดการสนทนาแล้ว");
+      await openChat(state.chatUserId);
+    }
+
+    async function refreshChatAfterSend() {
+      const result = await callApi("chat.messages", {userId:state.chatUserId,limit:100});
+      state.chatMessages = result.messages || [];
+      const messagesNode = $("#chatMessages");
+      if (messagesNode) {
+        messagesNode.innerHTML = state.chatMessages.map(messageMarkup).join("");
+        messagesNode.scrollTop = messagesNode.scrollHeight;
+      }
+      await refreshChatList();
+    }
+
+    async function sendChatMessage() {
+      const input = $("#chatInput");
+      const text = input.value.trim();
+      if (!text || !state.chatUserId) return;
+      const agentName = $("#agentName").value.trim() || "เจ้าหน้าที่";
+      const button = $("#sendChat");
+      const localMessage = {
+        messageId:"local-" + Date.now(), senderType:"ADMIN", senderName:agentName,
+        messageType:"text", text, deliveryStatus:"กำลังส่ง", createdAt:new Date().toISOString()
+      };
+      state.chatMessages.push(localMessage);
+      $("#chatMessages").insertAdjacentHTML("beforeend", messageMarkup(localMessage));
+      $("#chatMessages").scrollTop = $("#chatMessages").scrollHeight;
+      input.value = "";
+      button.disabled = true;
+      try {
+        await callApi("chat.send", {userId:state.chatUserId,text,agentName,messageType:"text"});
+        await refreshChatAfterSend();
+      } catch (error) {
+        const lastBubble = $("#chatMessages")?.lastElementChild;
+        const meta = lastBubble ? $(".message-meta",lastBubble) : null;
+        if (meta) meta.innerHTML = `<span style="color:#b43e3e">ส่งไม่สำเร็จ: ${escapeHtml(error.message || error)}</span>`;
+        notify("ส่งข้อความไม่สำเร็จ", "error");
+      } finally {
+        if ($("#sendChat")) $("#sendChat").disabled = false;
+        if ($("#chatInput")) $("#chatInput").focus();
+      }
+    }
+
+    async function sendChatImageFile(file) {
+      if (!file || !state.chatUserId) return;
+      if (!/^image\/(jpeg|png)$/i.test(file.type)) return showError(new Error("รองรับรูปภาพ JPG และ PNG"));
+      if (file.size > 8 * 1024 * 1024) return showError(new Error("รูปภาพต้องมีขนาดไม่เกิน 8 MB"));
+      try {
+        Swal.fire({title:"กำลังอัปโหลดและส่งรูปภาพ",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+        const uploaded = await uploadImage(file);
+        await callApi("chat.send", {
+          userId:state.chatUserId,
+          agentName:$("#agentName").value.trim() || "เจ้าหน้าที่",
+          messageType:"image",
+          payload:{originalContentUrl:uploaded.image.imageUrl,previewImageUrl:uploaded.image.thumbnailUrl || uploaded.image.imageUrl,fileName:file.name}
+        });
+        Swal.close();
+        notify("ส่งรูปภาพให้ลูกค้าแล้ว");
+        await refreshChatAfterSend();
+      } catch (error) { Swal.close(); showError(error); }
+      finally { if ($("#chatImageFile")) $("#chatImageFile").value = ""; }
+    }
+
+    async function sendChatGeneralFile(file) {
+      if (!file || !state.chatUserId) return;
+      if (file.size > 7 * 1024 * 1024) return showError(new Error("ไฟล์ต้องมีขนาดไม่เกิน 7 MB"));
+      if (!(await confirmAction("อัปโหลดและส่งไฟล์นี้?", "ไฟล์จะถูกเก็บใน Google Drive และตั้งค่าให้ผู้ที่มีลิงก์สามารถเปิดดูหรือดาวน์โหลดได้ ไม่ควรส่งเอกสารที่มีข้อมูลลับ", "อัปโหลดและส่ง"))) {
+        if ($("#chatGeneralFile")) $("#chatGeneralFile").value = "";
+        return;
+      }
+      try {
+        Swal.fire({title:"กำลังอัปโหลดไฟล์",text:"ระบบจะสร้างลิงก์ดาวน์โหลดสำหรับส่งให้ลูกค้า",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+        const base64 = await fileAsDataUrl(file);
+        const uploaded = await callApi("files.upload", {base64,name:file.name,mimeType:file.type || "application/octet-stream"});
+        await callApi("chat.send", {
+          userId:state.chatUserId,
+          agentName:$("#agentName").value.trim() || "เจ้าหน้าที่",
+          messageType:"file",
+          payload:{file:uploaded.file}
+        });
+        Swal.close();
+        notify("ส่งลิงก์ไฟล์ให้ลูกค้าแล้ว");
+        await refreshChatAfterSend();
+      } catch (error) { Swal.close(); showError(error); }
+      finally { if ($("#chatGeneralFile")) $("#chatGeneralFile").value = ""; }
+    }
+
+    async function sendChatFlexTemplate() {
+      if (!state.chatUserId) return;
+      try {
+        const result = await callApi("flex.list", {activeOnly:true});
+        const templates = result.templates || [];
+        if (!templates.length) return notify("ยังไม่มี Flex Template ที่เปิดใช้งาน", "warning");
+        const inputOptions = {};
+        templates.forEach(template => { inputOptions[template.templateId] = template.name || "Flex Message"; });
+        const selected = await Swal.fire({
+          title:"เลือก Flex Message",input:"select",inputOptions,inputPlaceholder:"เลือกข้อความที่ต้องการส่ง",
+          showCancelButton:true,confirmButtonText:"ส่ง Flex",cancelButtonText:"ยกเลิก",confirmButtonColor:"#205445"
+        });
+        if (!selected.isConfirmed || !selected.value) return;
+        const template = templates.find(item => String(item.templateId) === String(selected.value));
+        if (!template) return;
+        await callApi("chat.send", {
+          userId:state.chatUserId,
+          agentName:$("#agentName").value.trim() || "เจ้าหน้าที่",
+          messageType:"flex",
+          payload:{altText:template.altText || template.name,contents:template.contents}
+        });
+        notify("ส่ง Flex Message ให้ลูกค้าแล้ว");
+        await refreshChatAfterSend();
+      } catch (error) { showError(error); }
+    }
+
+    async function sendChatMenuFlex() {
+      if (!state.chatUserId) return;
+      try {
+        const result = await callApi("menus.list", {availableOnly:true});
+        const items = result.items || [];
+        if (!items.length) return notify("ยังไม่มีเมนูที่เปิดจำหน่าย", "warning");
+        const optionRows = items.map((item,index) => `
+          <label style="display:flex;align-items:center;gap:9px;padding:8px;border-bottom:1px solid #edf1ee;text-align:left">
+            <input type="checkbox" value="${escapeHtml(item.menuItemId)}" ${index < Math.min(6,items.length) ? "checked" : ""}>
+            ${(safeImage(item.thumbnailUrl || item.imageUrl,item.name).replace('<img ', '<img style="width:52px;height:52px;object-fit:cover;border-radius:8px" ')) || '<span class="avatar"><i class="fa-solid fa-bowl-food"></i></span>'}
+            <span style="flex:1"><strong>${escapeHtml(item.name)}</strong><span class="small muted" style="display:block">${money(item.price)} บาท</span></span>
+          </label>`).join("");
+        const selected = await Swal.fire({
+          title:"เลือกเมนูเพื่อส่งเป็น Flex",
+          html:`<div id="chatMenuChooser" style="max-height:55vh;overflow:auto;text-align:left">${optionRows}</div><div class="small muted" style="margin-top:8px">เลือกได้สูงสุด 12 เมนูต่อหนึ่ง Flex Carousel</div>`,
+          showCancelButton:true,confirmButtonText:"ส่งเมนูที่เลือก",cancelButtonText:"ยกเลิก",confirmButtonColor:"#205445",
+          preConfirm:() => {
+            const ids = Array.from($$("input[type=checkbox]",$("#chatMenuChooser"))).filter(input => input.checked).map(input => input.value);
+            if (!ids.length) { Swal.showValidationMessage("กรุณาเลือกอย่างน้อย 1 เมนู"); return false; }
+            if (ids.length > 12) { Swal.showValidationMessage("เลือกได้สูงสุด 12 เมนูต่อครั้ง"); return false; }
+            return ids;
+          }
+        });
+        if (!selected.isConfirmed) return;
+        Swal.fire({title:"กำลังจัดส่งเมนู",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+        await callApi("chat.sendMenuFlex", {
+          userId:state.chatUserId,
+          agentName:$("#agentName").value.trim() || "เจ้าหน้าที่",
+          menuItemIds:selected.value
+        });
+        Swal.close();
+        notify("ส่งรายการเมนูแบบ Flex แล้ว");
+        await refreshChatAfterSend();
+      } catch (error) { Swal.close(); showError(error); }
+    }
+
+    /* -----------------------------------------------------------------------
+       Handover queue and timeout settings
+       -------------------------------------------------------------------- */
+
+    async function renderHandover(root) {
+      const [queueResult, settingsResult] = await Promise.all([
+        callApi("handover.queue", {status:"WAITING"}),
+        callApi("handover.settings.get")
+      ]);
+      const queue = queueResult.queue || [];
+      const settings = settingsResult.settings || settingsResult;
+      const rows = queue.map(item => `<tr>
+        <td><strong>${escapeHtml(item.member?.displayName || item.userId)}</strong><div class="small muted">${escapeHtml(item.userId)}</div></td>
+        <td>${dateTime(item.requestedAt)}</td>
+        <td>${dateTime(item.deadlineAt)}</td>
+        <td>${statusBadge(item.handoverStatus)}</td>
+        <td><button class="btn btn-primary btn-small" data-handover-accept="${escapeHtml(item.userId)}"><i class="fa-solid fa-headset"></i> รับช่วง</button></td>
+      </tr>`);
+      root.innerHTML = `
+        ${panel("ตั้งค่าการส่งต่อ", "กำหนดเวลาแจ้งลูกค้าเมื่อไม่มีแอดมินรับช่วง", `
+          <form id="handoverForm" class="form-grid">
+            ${field("เวลารอก่อน Timeout (นาที)", "timeoutMinutes", settings.timeoutMinutes || 5, "number")}
+            <div class="field full">${checkbox("เปิดใช้งานระบบ Handover", "enabled", settings.enabled !== false)}</div>
+            <div class="field full">${checkbox("ให้ AI กลับมาตอบหลัง Timeout", "resumeAiAfterTimeout", settings.resumeAiAfterTimeout !== false)}</div>
+            <div class="field full">${checkbox("แจ้งกลุ่มพนักงานเมื่อมีคำขอ", "notifyStaff", settings.notifyStaff !== false)}</div>
+            ${field("ข้อความแจ้งว่ากำลังประสานเจ้าหน้าที่", "initialMessage", settings.initialMessage || "", "textarea", {full:true})}
+            ${field("ข้อความเมื่อไม่มีแอดมิน", "timeoutMessage", settings.timeoutMessage || "", "textarea", {full:true})}
+            ${field("ข้อความเมื่อแอดมินรับช่วง", "acceptedMessage", settings.acceptedMessage || "", "textarea", {full:true})}
+            ${field("ข้อความเมื่อส่งคืนให้ AI", "returnedToAiMessage", settings.returnedToAiMessage || "", "textarea", {full:true})}
+            <div class="field full"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button></div>
+          </form>
+        `)}
+        <div style="margin-top:15px">
+          ${panel("คิวรอเจ้าหน้าที่", "รายการที่ยังไม่มีพนักงานรับช่วง", tableHtml(
+            ["ลูกค้า","เวลาที่ขอ","กำหนดเวลา","สถานะ","จัดการ"], rows, "ไม่มีคำขอรอเจ้าหน้าที่"
+          ))}
+        </div>`;
+      $("#handoverForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        const values = formValues(event.currentTarget);
+        values.timeoutMinutes = Number(values.timeoutMinutes);
+        await callApi("handover.settings.save", values);
+        notify("บันทึกการตั้งค่า Handover แล้ว");
+      });
+      $$("[data-handover-accept]").forEach(button => button.addEventListener("click", async () => {
+        await callApi("chat.accept", {
+          userId:button.dataset.handoverAccept,
+          agentName:$("#agentName").value.trim() || "Ponlabat"
+        });
+        notify("รับช่วงลูกค้าแล้ว");
+        navigate("handover");
+      }));
+    }
+
+    /* -----------------------------------------------------------------------
+       Menu categories, menu items and ImgBB image library
+       -------------------------------------------------------------------- */
+
+    async function renderMenu(root) {
+      const [menuResult, categoryResult] = await Promise.all([
+        callApi("menus.list"),
+        callApi("categories.list")
+      ]);
+      state.menuItems = menuResult.items || [];
+      state.categories = categoryResult.categories || [];
+      const rows = state.menuItems.map(item => `<tr>
+        <td>${safeImage(item.thumbnailUrl || item.imageUrl,item.name) || '<div class="avatar"><i class="fa-solid fa-bowl-food"></i></div>'}</td>
+        <td><strong>${escapeHtml(item.name)}</strong><div class="small muted">${escapeHtml(item.description || "")}</div></td>
+        <td>${escapeHtml(state.categories.find(category => category.categoryId === item.categoryId)?.name || "-")}</td>
+        <td>${money(item.price)}</td>
+        <td>${item.available ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <button class="icon-btn" data-menu-edit="${escapeHtml(item.menuItemId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-menu-delete="${escapeHtml(item.menuItemId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <div class="toolbar-left">
+            <button class="btn btn-primary" id="addMenu"><i class="fa-solid fa-plus"></i> เพิ่มเมนูอาหาร</button>
+            <button class="btn btn-secondary" id="manageCategories"><i class="fa-solid fa-list"></i> จัดการหมวดหมู่</button>
+          </div>
+        </div>
+        ${panel("รายการอาหาร", "จัดการชื่ออาหาร ราคา รายละเอียด ตัวเลือก และสถานะจำหน่าย",
+          tableHtml(["ภาพ","ชื่ออาหาร","หมวดหมู่","ราคา","สถานะ","จัดการ"], rows, "ยังไม่มีรายการอาหาร"))}`;
+      $("#addMenu").addEventListener("click", () => editMenuItem());
+      $("#manageCategories").addEventListener("click", manageCategories);
+      $$("[data-menu-edit]").forEach(button => button.addEventListener("click", () => {
+        editMenuItem(state.menuItems.find(item => item.menuItemId === button.dataset.menuEdit));
+      }));
+      $$("[data-menu-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("menus.delete", {menuItemId:button.dataset.menuDelete}, "ลบรายการอาหารนี้?");
+      }));
+    }
+
+    function menuOptionChoiceMarkup(choice = {}) {
+      const extra = Math.max(0, Number(choice.additionalPrice || choice.additional_price || 0));
+      return `<div class="menu-option-choice" data-option-choice>
+        <input class="control" data-choice-name type="text" value="${escapeHtml(choice.name || "")}" placeholder="ชื่อตัวเลือก เช่น น้ำใส" required>
+        <label class="option-toggle"><input data-charge-extra type="checkbox" ${extra > 0 ? "checked" : ""}> คิดเพิ่ม</label>
+        <input class="control option-price" data-choice-price type="number" min="0" step="1" value="${extra}" ${extra > 0 ? "" : "disabled"} placeholder="บาท">
+        <button type="button" class="icon-btn option-remove" data-remove-option-choice title="ลบตัวเลือก"><i class="fa-regular fa-trash-can"></i></button>
+      </div>`;
+    }
+
+    function menuOptionGroupMarkup(group = {}) {
+      const choices = Array.isArray(group.choices) ? group.choices : [];
+      return `<div class="menu-option-group" data-option-group>
+        <div class="menu-option-group-head">
+          <input class="control" data-group-name type="text" value="${escapeHtml(group.name || "")}" placeholder="ชื่อกลุ่ม เช่น ประเภทเส้น" required>
+          <label class="option-toggle option-required"><input data-group-required type="checkbox" ${group.required ? "checked" : ""}> บังคับเลือก</label>
+          <button type="button" class="icon-btn" data-remove-option-group title="ลบกลุ่ม"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+        <div data-option-choices>${choices.map(menuOptionChoiceMarkup).join("")}</div>
+        <button type="button" class="btn btn-secondary btn-small" data-add-option-choice style="margin-top:9px"><i class="fa-solid fa-plus"></i> เพิ่มรายการตัวเลือก</button>
+      </div>`;
+    }
+
+    function bindMenuOptionsEditor() {
+      const editor = $("#menuOptionsEditor");
+      if (!editor) return;
+      $("#addMenuOptionGroup")?.addEventListener("click", () => {
+        editor.insertAdjacentHTML("beforeend", menuOptionGroupMarkup({name:"",required:true,choices:[{name:"",additionalPrice:0}]}));
+      });
+      editor.addEventListener("click", event => {
+        const addChoice = event.target.closest("[data-add-option-choice]");
+        if (addChoice) {
+          const choices = addChoice.parentElement.querySelector("[data-option-choices]");
+          choices.insertAdjacentHTML("beforeend", menuOptionChoiceMarkup({name:"",additionalPrice:0}));
+          return;
+        }
+        const removeChoice = event.target.closest("[data-remove-option-choice]");
+        if (removeChoice) { removeChoice.closest("[data-option-choice]").remove(); return; }
+        const removeGroup = event.target.closest("[data-remove-option-group]");
+        if (removeGroup) removeGroup.closest("[data-option-group]").remove();
+      });
+      editor.addEventListener("change", event => {
+        const toggle = event.target.closest("[data-charge-extra]");
+        if (!toggle) return;
+        const price = toggle.closest("[data-option-choice]").querySelector("[data-choice-price]");
+        price.disabled = !toggle.checked;
+        if (!toggle.checked) price.value = 0;
+      });
+    }
+
+    function collectMenuOptionGroups(root = document) {
+      const groups = [];
+      const editor = root.querySelector("#menuOptionsEditor");
+      if (!editor) return groups;
+      $$("[data-option-group]",editor).forEach(groupNode => {
+        const name = $("[data-group-name]",groupNode).value.trim();
+        if (!name) throw new Error("กรุณาระบุชื่อกลุ่มตัวเลือก");
+        const choices = [];
+        $$("[data-option-choice]",groupNode).forEach(choiceNode => {
+          const choiceName = $("[data-choice-name]",choiceNode).value.trim();
+          if (!choiceName) throw new Error("กรุณาระบุชื่อตัวเลือกให้ครบ");
+          const charge = $("[data-charge-extra]",choiceNode).checked;
+          const price = charge ? Number($("[data-choice-price]",choiceNode).value || 0) : 0;
+          if (!Number.isFinite(price) || price < 0) throw new Error("ราคาที่บวกเพิ่มต้องเป็นตัวเลขตั้งแต่ 0 บาทขึ้นไป");
+          choices.push({name:choiceName,additionalPrice:price});
+        });
+        if (!choices.length) throw new Error("กลุ่มตัวเลือกต้องมีอย่างน้อย 1 รายการ");
+        groups.push({name:name,required:$("[data-group-required]",groupNode).checked,choices:choices});
+      });
+      return groups;
+    }
+
+    async function editMenuItem(item = {}) {
+      const categoryOptions = [{value:"",label:"ไม่ระบุหมวดหมู่"}].concat(
+        state.categories.map(category => ({value:category.categoryId,label:category.name}))
+      );
+      const existingOptions = item.options || parseJson(item.optionsJson, []) || [];
+      const result = await modalForm("ข้อมูลเมนูอาหาร", `
+        ${field("ชื่ออาหาร", "name", item.name || "", "text", {full:true,required:true})}
+        ${field("หมวดหมู่", "categoryId", item.categoryId || "", "select", {options:categoryOptions})}
+        ${field("ราคา (บาท)", "price", item.price || 0, "number", {required:true})}
+        ${field("รายละเอียด", "description", item.description || "", "textarea", {full:true})}
+        <div class="field full"><label>รูปภาพเมนูอาหาร</label><div class="menu-upload-preview" style="margin:7px 0">${safeImage(item.thumbnailUrl || item.imageUrl,item.name || "ภาพเมนู") || "ยังไม่มีรูปภาพ"}</div><input id="menuImageFile" name="menuImageFile" type="file" accept="image/jpeg,image/png"><div class="field-help">เลือกรูปจากเครื่องได้โดยตรง JPG / PNG ไม่เกิน 8 MB · ไม่เลือกไฟล์เพื่อใช้รูปเดิม</div></div>
+        ${field("คำค้น / Keyword", "keywords", item.keywords || "", "text", {full:true})}
+        <div class="field full"><label>ตัวเลือกเพิ่มเติม</label><div id="menuOptionsEditor">${existingOptions.map(menuOptionGroupMarkup).join("")}</div><button type="button" class="btn btn-secondary btn-small" id="addMenuOptionGroup"><i class="fa-solid fa-plus"></i> เพิ่มกลุ่มตัวเลือก</button><div class="field-help">เพิ่มกลุ่ม เช่น ประเภทน้ำซุป / ขนาด / ประเภทเส้น แล้วเพิ่มรายการในแต่ละกลุ่ม สามารถเปิด “คิดเพิ่ม” และระบุจำนวนเงินได้</div></div>
+        ${field("ลำดับแสดงผล", "sortOrder", item.sortOrder || 0, "number")}
+        <div class="field full">${checkbox("เปิดจำหน่าย", "available", item.available !== false)}</div>
+      `, "บันทึก", bindMenuOptionsEditor, form => {
+        try { return {menuOptions:collectMenuOptionGroups(form)}; }
+        catch (error) { Swal.showValidationMessage(error.message || String(error)); return false; }
+      });
+      if (!result) return;
+      const options = result.menuOptions || [];
+      const imageFile = result.menuImageFile;
+      if (imageFile instanceof File && imageFile.size > 8 * 1024 * 1024) return showError(new Error("รูปภาพต้องมีขนาดไม่เกิน 8 MB"));
+      try {
+        const saved = await callApi("menus.save", {
+          menuItemId:item.menuItemId || "",
+          name:result.name,
+          categoryId:result.categoryId,
+          price:Number(result.price),
+          description:result.description,
+          imageUrl:item.imageUrl || "",
+          thumbnailUrl:item.thumbnailUrl || item.imageUrl || "",
+          options,
+          keywords:result.keywords,
+          sortOrder:Number(result.sortOrder),
+          available:Boolean(result.available)
+        });
+        if (imageFile instanceof File && imageFile.size) {
+          Swal.fire({title:"กำลังอัปโหลดรูปภาพเมนู",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+          await uploadImage(imageFile,{menuItemId:saved.menuItemId});
+          Swal.close();
+        }
+        notify("บันทึกเมนูอาหารแล้ว");
+        navigate("menu");
+      } catch (error) { Swal.close(); showError(error); }
+    }
+
+    async function manageCategories() {
+      const result = await callApi("categories.list");
+      const categories = result.categories || [];
+      const content = categories.map(item => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #edf1ee">
+          <span>${escapeHtml(item.name)}</span>
+          <span>
+            <button class="icon-btn" data-category-edit="${escapeHtml(item.categoryId)}"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn" data-category-remove="${escapeHtml(item.categoryId)}"><i class="fa-regular fa-trash-can"></i></button>
+          </span>
+        </div>`).join("");
+      Swal.fire({
+        title:"จัดการหมวดหมู่อาหาร",
+        html:`<div style="text-align:left;max-height:45vh;overflow:auto">${content || "ยังไม่มีหมวดหมู่"}</div>
+          <button class="btn btn-primary" id="addCategory" style="margin-top:13px"><i class="fa-solid fa-plus"></i> เพิ่มหมวดหมู่</button>`,
+        showConfirmButton:false,
+        showCloseButton:true,
+        didOpen: () => {
+          $("#addCategory").addEventListener("click", async () => {
+            const values = await modalForm("เพิ่มหมวดหมู่", `
+              ${field("ชื่อหมวดหมู่","name","","text",{full:true,required:true})}
+              ${field("รายละเอียด","description","","textarea",{full:true})}
+              ${field("ลำดับแสดงผล","sortOrder",0,"number")}
+            `);
+            if (!values) return;
+            await callApi("categories.save", {...values,sortOrder:Number(values.sortOrder)});
+            Swal.close();
+            manageCategories();
+          });
+          $$("[data-category-edit]").forEach(button => button.addEventListener("click", async () => {
+            const item = categories.find(category => category.categoryId === button.dataset.categoryEdit);
+            const values = await modalForm("แก้ไขหมวดหมู่", `
+              ${field("ชื่อหมวดหมู่","name",item.name,"text",{full:true,required:true})}
+              ${field("รายละเอียด","description",item.description || "","textarea",{full:true})}
+              ${field("ลำดับแสดงผล","sortOrder",item.sortOrder || 0,"number")}
+            `);
+            if (!values) return;
+            await callApi("categories.save", {...values,categoryId:item.categoryId,sortOrder:Number(values.sortOrder)});
+            Swal.close();
+            manageCategories();
+          }));
+          $$("[data-category-remove]").forEach(button => button.addEventListener("click", async () => {
+            if (!(await confirmAction("ลบหมวดหมู่?", "ตรวจสอบรายการอาหารที่อาจอ้างอิงหมวดหมู่นี้ก่อน"))) return;
+            await callApi("categories.delete", {categoryId:button.dataset.categoryRemove});
+            Swal.close();
+            manageCategories();
+          }));
+        }
+      });
+    }
+
+    async function fileAsDataUrl(file) {
+      return new Promise((resolve,reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("อ่านไฟล์ไม่สำเร็จ"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadImage(file, extra = {}) {
+      if (!file) throw new Error("กรุณาเลือกไฟล์รูปภาพ");
+      if (!file.type.startsWith("image/")) throw new Error("รองรับเฉพาะไฟล์รูปภาพ");
+      if (file.size > 8 * 1024 * 1024) throw new Error("ไฟล์ต้องมีขนาดไม่เกิน 8 MB");
+      const base64 = await fileAsDataUrl(file);
+      return callApi("images.upload", {base64,name:file.name,...extra});
+    }
+
+    async function renderImages(root) {
+      const result = await callApi("images.list", {limit:300});
+      const images = result.images || [];
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">รูปภาพอัปโหลดผ่าน ImgBB และบันทึกลิงก์ไว้ใน MENU_IMAGES</span>
+          <label class="btn btn-primary" for="imageUpload"><i class="fa-solid fa-cloud-arrow-up"></i> อัปโหลดรูปภาพ</label>
+          <input type="file" class="hidden" id="imageUpload" accept="image/*">
+        </div>
+        <div class="image-grid">
+          ${images.map(image => `<div class="image-card">
+            ${safeImage(image.thumbnailUrl || image.imageUrl,image.name) || '<div class="empty">ไม่มีภาพตัวอย่าง</div>'}
+            <div style="font-weight:700;margin-top:7px">${escapeHtml(image.name || "รูปภาพ")}</div>
+            <div class="small muted">${dateTime(image.createdAt)}</div>
+            <div class="toolbar-right" style="margin-top:8px">
+              <button class="btn btn-secondary btn-small" data-copy-image="${escapeHtml(image.imageUrl)}"><i class="fa-regular fa-copy"></i> คัดลอก URL</button>
+              <button class="icon-btn" data-remove-image="${escapeHtml(image.imageId)}"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>`).join("") || '<div class="empty"><i class="fa-regular fa-images"></i><strong>ยังไม่มีรูปภาพ</strong></div>'}
+        </div>`;
+      $("#imageUpload").addEventListener("change", async event => {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+          Swal.fire({title:"กำลังอัปโหลดรูปภาพ",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+          await uploadImage(file);
+          Swal.close();
+          notify("อัปโหลดรูปภาพสำเร็จ");
+          navigate("images");
+        } catch (error) {
+          Swal.close();
+          showError(error);
+        }
+      });
+      $$("[data-copy-image]").forEach(button => button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(button.dataset.copyImage);
+          notify("คัดลอก URL แล้ว");
+        } catch (error) {
+          showError(new Error("คัดลอกไม่ได้ กรุณาคัดลอก URL จากรายละเอียดภาพ"));
+        }
+      }));
+      $$("[data-remove-image]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("images.delete", {imageId:button.dataset.removeImage}, "ลบรายการรูปภาพนี้?");
+      }));
+    }
+
+    /* -----------------------------------------------------------------------
+       Orders and order status
+       -------------------------------------------------------------------- */
+
+    async function renderOrders(root) {
+      const result = await callApi("orders.list", {limit:300});
+      const orders = result.orders || [];
+      const rows = orders.map(order => `<tr>
+        <td><strong>${escapeHtml(order.orderId)}</strong><div class="small muted">${dateTime(order.createdAt)}</div></td>
+        <td>${escapeHtml(order.displayName || "-")}<div class="small muted">${escapeHtml(order.userId || "")}</div></td>
+        <td>${escapeHtml(order.fulfillmentType || "-")}</td>
+        <td>${escapeHtml(order.arrivalTime || "-")}</td>
+        <td>${escapeHtml(order.partySize || "-")}</td>
+        <td>${money(order.total)}</td>
+        <td>${statusBadge(order.status)}</td>
+        <td><button class="btn btn-secondary btn-small" data-order-change="${escapeHtml(order.orderId)}"><i class="fa-solid fa-arrows-rotate"></i> สถานะ</button></td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">ตรวจสอบออเดอร์ที่ลูกค้าสั่งผ่าน LINE และรายการที่พนักงานสร้างเอง</span>
+          <button class="btn btn-primary" id="createOrder"><i class="fa-solid fa-plus"></i> สร้างออเดอร์</button>
+        </div>
+        ${panel("รายการสั่งอาหาร", "เปลี่ยนสถานะและแจ้งลูกค้าผ่าน LINE ได้", tableHtml(
+          ["เลขที่ออเดอร์","ลูกค้า","วิธีรับอาหาร","เวลามาถึง","จำนวนคน","ยอดรวม","สถานะ","จัดการ"],
+          rows,"ยังไม่มีออเดอร์"
+        ))}`;
+      $("#createOrder").addEventListener("click", createOrderForm);
+      $$("[data-order-change]").forEach(button => button.addEventListener("click", () => {
+        changeOrderStatus(orders.find(order => order.orderId === button.dataset.orderChange));
+      }));
+    }
+
+    async function changeOrderStatus(order) {
+      if (!order) return;
+      const result = await Swal.fire({
+        title:"เปลี่ยนสถานะออเดอร์",
+        input:"select",
+        inputOptions:{
+          NEW:"ออเดอร์ใหม่",
+          ACCEPTED:"รับออเดอร์แล้ว",
+          COOKING:"กำลังจัดเตรียม",
+          READY:"พร้อมรับอาหาร",
+          COMPLETED:"เสร็จสิ้น",
+          CANCELLED:"ยกเลิก"
+        },
+        inputValue:order.status,
+        showCancelButton:true,
+        confirmButtonText:"บันทึก",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445"
+      });
+      if (!result.isConfirmed) return;
+      await callApi("orders.update", {
+        orderId:order.orderId,
+        status:result.value,
+        actor:$("#agentName").value.trim() || "Dashboard",
+        notifyCustomer:true
+      });
+      notify("อัปเดตสถานะออเดอร์แล้ว");
+      navigate("orders");
+    }
+
+    async function createOrderForm() {
+      const values = await modalForm("สร้างออเดอร์ด้วยมือ", `
+        ${field("LINE User ID (ถ้ามี)","userId","")}
+        ${field("ชื่อลูกค้า","displayName","","text",{required:true})}
+        ${field("รูปแบบรับอาหาร","fulfillmentType","dine_in","select",{options:[
+          {value:"dine_in",label:"ทานที่ร้าน"},
+          {value:"takeaway",label:"กลับบ้าน"}
+        ]})}
+        ${field("เวลามาถึงร้าน","arrivalTime","","text")}
+        ${field("จำนวนคน","partySize",1,"number")}
+        ${field("ยอดรวม (บาท)","total",0,"number")}
+        ${field("รายการอาหาร JSON Array","itemsJson",'[{"name":"ก๋วยเตี๋ยว","quantity":1,"unitPrice":0}]',"textarea",{full:true,required:true})}
+        ${field("หมายเหตุ","note","","textarea",{full:true})}
+      `);
+      if (!values) return;
+      const items = parseJson(values.itemsJson,null);
+      if (!Array.isArray(items)) return showError(new Error("รายการอาหารต้องเป็น JSON Array"));
+      await callApi("orders.create", {
+        userId:values.userId,
+        displayName:values.displayName,
+        fulfillmentType:values.fulfillmentType,
+        arrivalTime:values.arrivalTime,
+        partySize:Number(values.partySize),
+        total:Number(values.total),
+        subtotal:Number(values.total),
+        items,
+        note:values.note,
+        actor:$("#agentName").value.trim() || "Dashboard"
+      });
+      notify("สร้างออเดอร์แล้ว");
+      navigate("orders");
+    }
+
+    /* -----------------------------------------------------------------------
+       Keyword rules and automation rules
+       -------------------------------------------------------------------- */
+
+    async function renderKeywords(root) {
+      const result = await callApi("keywords.list");
+      const rules = result.rules || [];
+      const rows = rules.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong><div class="small muted">${escapeHtml(item.keywords)}</div></td>
+        <td>${escapeHtml(item.matchType)}</td>
+        <td>${escapeHtml(item.responseType)}</td>
+        <td>${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <button class="icon-btn" data-keyword-edit="${escapeHtml(item.ruleId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-keyword-delete="${escapeHtml(item.ruleId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">ตั้งคำสำคัญและกำหนดวิธีตอบกลับเมื่อพบข้อความที่ตรงเงื่อนไข</span>
+          <button class="btn btn-primary" id="addKeyword"><i class="fa-solid fa-plus"></i> เพิ่ม Keyword Rule</button>
+        </div>
+        ${panel("Keyword Rules", "รายการกฎและลำดับความสำคัญ", tableHtml(
+          ["ชื่อกฎ / คำค้น","รูปแบบจับคู่","ประเภทคำตอบ","สถานะ","จัดการ"],rows,"ยังไม่มีกฎ Keyword"
+        ))}`;
+      $("#addKeyword").addEventListener("click", () => editKeyword());
+      $$("[data-keyword-edit]").forEach(button => button.addEventListener("click", () => {
+        editKeyword(rules.find(item => item.ruleId === button.dataset.keywordEdit));
+      }));
+      $$("[data-keyword-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("keywords.delete", {ruleId:button.dataset.keywordDelete}, "ลบกฎ Keyword นี้?");
+      }));
+    }
+
+    async function editKeyword(item = {}) {
+      const payload = parseJson(item.responsePayloadJson,{text:""});
+      const result = await modalForm("กำหนด Keyword Rule", `
+        ${field("ชื่อกฎ","name",item.name || "","text",{full:true,required:true})}
+        ${field("คำค้น (คั่นด้วย |)","keywords",item.keywords || "","text",{full:true,required:true})}
+        ${field("รูปแบบจับคู่","matchType",item.matchType || "contains","select",{options:[
+          {value:"contains",label:"มีคำนี้อยู่ในข้อความ"},
+          {value:"exact",label:"ตรงกับข้อความทั้งหมด"},
+          {value:"startsWith",label:"ขึ้นต้นด้วยคำนี้"}
+        ]})}
+        ${field("ประเภทคำตอบ","responseType",item.responseType || "text","select",{options:[
+          {value:"text",label:"Text"},
+          {value:"flex",label:"Flex"}
+        ]})}
+        ${field("Response Payload JSON","responsePayloadJson",JSON.stringify(payload,null,2),"textarea",{full:true,required:true})}
+        ${field("Priority","priority",item.priority || 0,"number")}
+        <div class="field full">${checkbox("เปิดใช้งาน","active",item.active !== false)}</div>
+      `);
+      if (!result) return;
+      const responsePayload = parseJson(result.responsePayloadJson,null);
+      if (!responsePayload) return showError(new Error("Response Payload JSON ไม่ถูกต้อง"));
+      await callApi("keywords.save", {
+        ruleId:item.ruleId || "",
+        name:result.name,
+        keywords:result.keywords,
+        matchType:result.matchType,
+        responseType:result.responseType,
+        responsePayload,
+        priority:Number(result.priority),
+        active:Boolean(result.active)
+      });
+      notify("บันทึก Keyword Rule แล้ว");
+      navigate("keywords");
+    }
+
+    async function renderAutomations(root) {
+      const result = await callApi("automations.list");
+      const items = result.automations || [];
+      const rows = items.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong></td>
+        <td>${escapeHtml(item.triggerType)}<div class="small muted">${escapeHtml(item.triggerValue || "")}</div></td>
+        <td>${escapeHtml(item.actionType)}</td>
+        <td>${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <button class="icon-btn" data-automation-edit="${escapeHtml(item.automationId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-automation-delete="${escapeHtml(item.automationId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">กำหนด Trigger และ Action ตามที่ Backend รองรับ</span>
+          <button class="btn btn-primary" id="addAutomation"><i class="fa-solid fa-plus"></i> เพิ่ม Automation</button>
+        </div>
+        ${panel("Automation Rules", "รายการงานอัตโนมัติ", tableHtml(
+          ["ชื่อ","Trigger","Action","สถานะ","จัดการ"],rows,"ยังไม่มี Automation"
+        ))}`;
+      $("#addAutomation").addEventListener("click", () => editAutomation());
+      $$("[data-automation-edit]").forEach(button => button.addEventListener("click", () => {
+        editAutomation(items.find(item => item.automationId === button.dataset.automationEdit));
+      }));
+      $$("[data-automation-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("automations.delete", {automationId:button.dataset.automationDelete}, "ลบ Automation นี้?");
+      }));
+    }
+
+    async function editAutomation(item = {}) {
+      const actionPayload = parseJson(item.actionPayloadJson,{});
+      const result = await modalForm("กำหนด Automation", `
+        ${field("ชื่อ Automation","name",item.name || "","text",{full:true,required:true})}
+        ${field("Trigger Type","triggerType",item.triggerType || "keyword","select",{options:[
+          {value:"keyword",label:"Keyword (Backend ประมวลผลจริง)"}
+        ]})}
+        ${field("Trigger Value","triggerValue",item.triggerValue || "","text",{full:true})}
+        ${field("Action Type","actionType",item.actionType || "send_text","select",{options:[
+          {value:"send_text",label:"ส่งข้อความ"},
+          {value:"send_flex",label:"ส่ง Flex"},
+          {value:"handover",label:"ส่งต่อเจ้าหน้าที่"},
+          {value:"add_tag",label:"ติด Tag สมาชิก"}
+        ]})}
+        ${field("Action Payload JSON","actionPayloadJson",JSON.stringify(actionPayload,null,2),"textarea",{full:true})}
+        <div class="field full">${checkbox("เปิดใช้งาน","active",item.active !== false)}</div>
+      `);
+      if (!result) return;
+      const payload = parseJson(result.actionPayloadJson,null);
+      if (!payload) return showError(new Error("Action Payload JSON ไม่ถูกต้อง"));
+      await callApi("automations.save", {
+        automationId:item.automationId || "",
+        name:result.name,
+        triggerType:result.triggerType,
+        triggerValue:result.triggerValue,
+        actionType:result.actionType,
+        actionPayload:payload,
+        active:Boolean(result.active)
+      });
+      notify("บันทึก Automation แล้ว");
+      navigate("automations");
+    }
+
+    async function renderFlow(root) {
+      const result = await callApi("flows.list");
+      const flows = result.flows || [];
+      const rows = flows.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong><div class="small muted">${escapeHtml(item.description || "")}</div></td>
+        <td>${escapeHtml(item.triggerType || "contains")}<div class="small muted">${escapeHtml(item.triggerValue || "")}</div></td>
+        <td>${(item.nodes || []).length} Nodes</td>
+        <td>${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <div class="table-actions">
+            <button class="icon-btn" data-flow-edit="${escapeHtml(item.flowId)}" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn" data-flow-delete="${escapeHtml(item.flowId)}" title="ลบ"><i class="fa-regular fa-trash-can"></i></button>
+          </div>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">Flow ที่ Active จะถูกตรวจสอบก่อนส่งข้อความให้ Gemini เมื่อข้อความตรงกับ Trigger</span>
+          <button class="btn btn-primary" id="addFlow"><i class="fa-solid fa-plus"></i> สร้าง Conversation Flow</button>
+        </div>
+        <div class="notice">รองรับ Trigger: contains, exact, startsWith และ Node: text, image, flex, raw (LINE Message Object) โดยกำหนด Nodes เป็น JSON Array</div>
+        <div style="margin-top:14px">${panel("Conversation Flows", "จัดการลำดับข้อความตอบกลับตามเงื่อนไข", tableHtml(
+          ["ชื่อ Flow", "Trigger", "Nodes", "สถานะ", "จัดการ"], rows, "ยังไม่มี Conversation Flow"
+        ))}</div>`;
+      $("#addFlow").addEventListener("click", () => editFlow());
+      $$('[data-flow-edit]').forEach(button => button.addEventListener("click", () => {
+        editFlow(flows.find(item => item.flowId === button.dataset.flowEdit));
+      }));
+      $$('[data-flow-delete]').forEach(button => button.addEventListener("click", () => {
+        deleteRecord("flows.delete", {flowId:button.dataset.flowDelete}, "ลบ Conversation Flow นี้?");
+      }));
+    }
+
+    async function editFlow(item = {}) {
+      const defaultNodes = [
+        {type:"text",text:"สวัสดีค่ะ ยินดีให้บริการจากก๋วยเตี๋ยวโบราณ by เจ๊อ้นค่ะ"}
+      ];
+      const nodes = item.nodes || parseJson(item.nodesJson, defaultNodes);
+      const result = await modalForm("Conversation Flow", `
+        ${field("ชื่อ Flow", "name", item.name || "", "text", {full:true,required:true})}
+        ${field("คำอธิบาย", "description", item.description || "", "textarea", {full:true})}
+        ${field("Trigger Type", "triggerType", item.triggerType || "contains", "select", {options:[
+          {value:"contains",label:"ข้อความมีคำที่กำหนด"},
+          {value:"exact",label:"ข้อความตรงทั้งหมด"},
+          {value:"startsWith",label:"ข้อความขึ้นต้นด้วยคำที่กำหนด"}
+        ]})}
+        ${field("Trigger Value (หลายคำคั่นด้วย |)", "triggerValue", item.triggerValue || "", "text", {full:true,required:true})}
+        ${field("Priority", "priority", item.priority || 0, "number")}
+        ${field("Nodes JSON Array", "nodesJson", JSON.stringify(nodes, null, 2), "textarea", {full:true,required:true,help:"Node ตัวอย่าง: [{\"type\":\"text\",\"text\":\"ข้อความตอบ\"}] หรือ type image / flex / raw"})}
+        <div class="field full">${checkbox("ส่งข้อความ Flow ต่อจากนั้นให้ AI ประมวลผลต่อ", "continueToAi", item.continueToAi === true || String(item.continueToAi) === "true")}</div>
+        <div class="field full">${checkbox("เปิดใช้งาน Flow", "active", item.active !== false)}</div>
+      `);
+      if (!result) return;
+      const nodesValue = parseJson(result.nodesJson, null);
+      if (!Array.isArray(nodesValue)) return showError(new Error("Nodes ต้องเป็น JSON Array"));
+      await callApi("flows.save", {
+        flowId: item.flowId || "",
+        name: result.name,
+        description: result.description,
+        triggerType: result.triggerType,
+        triggerValue: result.triggerValue,
+        priority: Number(result.priority || 0),
+        nodes: nodesValue,
+        continueToAi: Boolean(result.continueToAi),
+        active: Boolean(result.active)
+      });
+      notify("บันทึก Conversation Flow แล้ว");
+      navigate("flow");
+    }
+
+    /* -----------------------------------------------------------------------
+       Broadcast: selected LINE users and Flex messages
+       -------------------------------------------------------------------- */
+
+    async function renderBroadcast(root) {
+      const result = await callApi("broadcast.list",{limit:200});
+      const items = result.broadcasts || [];
+      const rows = items.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong><div class="small muted">${escapeHtml(item.broadcastId)}</div></td>
+        <td>${item.recipientCount || 0}</td>
+        <td>${statusBadge(item.status)}</td>
+        <td>${item.sentCount || 0}</td>
+        <td>${item.failedCount || 0}</td>
+        <td>
+          <button class="icon-btn" data-broadcast-run="${escapeHtml(item.broadcastId)}" title="ประมวลผลคิว"><i class="fa-solid fa-play"></i></button>
+          <button class="icon-btn" data-broadcast-retry="${escapeHtml(item.broadcastId)}" title="ส่งรายการผิดพลาดซ้ำ"><i class="fa-solid fa-rotate"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">ส่ง Text, Image หรือ Flex ไปยังสมาชิกที่เลือก</span>
+          <button class="btn btn-primary" id="newBroadcast"><i class="fa-solid fa-paper-plane"></i> สร้าง Broadcast</button>
+        </div>
+        ${panel("ประวัติ Broadcast", "ติดตามจำนวนผู้รับและผลการส่ง", tableHtml(
+          ["แคมเปญ","ผู้รับ","สถานะ","สำเร็จ","ผิดพลาด","จัดการ"],rows,"ยังไม่มีแคมเปญ"
+        ))}
+        <div class="notice warning" style="margin-top:14px">ส่งข้อความเฉพาะผู้ใช้ที่มีสิทธิ์รับข้อความจาก LINE OA และปฏิบัติตามนโยบายการส่งข้อความของ LINE</div>`;
+      $("#newBroadcast").addEventListener("click", createBroadcast);
+      $$("[data-broadcast-run]").forEach(button => button.addEventListener("click", async () => {
+        const response = await callApi("broadcast.run",{});
+        notify(`ประมวลผลคิวแล้ว ${response.processed || 0} รายการ · ${response.jobs || 0} แคมเปญ`);
+        navigate("broadcast");
+      }));
+      $$("[data-broadcast-retry]").forEach(button => button.addEventListener("click", async () => {
+        await callApi("broadcast.retryFailed",{broadcastId:button.dataset.broadcastRetry});
+        notify("นำรายการที่ผิดพลาดกลับเข้าคิวแล้ว");
+        navigate("broadcast");
+      }));
+    }
+
+    async function createBroadcast() {
+      const memberResult = await callApi("members.list",{limit:500});
+      const flexResult = await callApi("flex.list",{activeOnly:true});
+      const members = memberResult.members || [];
+      const templates = flexResult.templates || [];
+      if (!members.length) return showError(new Error("ยังไม่มีสมาชิกในฐานข้อมูล"));
+      const recipientsHtml = members.map(member => `
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px solid #edf1ee">
+          <input class="broadcast-user" type="checkbox" value="${escapeHtml(member.userId)}">
+          <span>${escapeHtml(member.displayName || member.userId)}</span>
+          <span class="small muted" style="margin-left:auto">${escapeHtml(member.userId)}</span>
+        </label>`).join("");
+      const templateHtml = templates.map(template => `<option value="${escapeHtml(template.templateId)}">${escapeHtml(template.name)}</option>`).join("");
+      const result = await Swal.fire({
+        title:"สร้าง Broadcast",
+        width:850,
+        html:`
+          <div class="field" style="text-align:left"><label>ชื่อแคมเปญ</label><input id="broadcastName" class="swal2-input" style="width:100%;margin:0"></div>
+          <div class="field" style="text-align:left;margin-top:10px"><label>Flex Template</label>
+            <select id="broadcastTemplate" class="swal2-select" style="width:100%;margin:0"><option value="">เลือก Flex Template</option>${templateHtml}</select>
+          </div>
+          <div class="field" style="text-align:left;margin-top:10px"><label>กำหนดเวลาส่ง (เว้นว่างเพื่อส่งทันที)</label><input id="broadcastDate" type="datetime-local" class="swal2-input" style="width:100%;margin:0"></div>
+          <div class="field" style="text-align:left;margin-top:12px">
+            <label>เลือกสมาชิก (${members.length} คน)</label>
+            <div style="max-height:260px;overflow:auto;border:1px solid #dce5df;border-radius:8px;padding:8px">${recipientsHtml}</div>
+            <button id="selectAllBroadcast" type="button" class="btn btn-secondary btn-small" style="margin-top:8px">เลือกทั้งหมด</button>
+          </div>`,
+        showCancelButton:true,
+        confirmButtonText:"สร้างคิวส่ง",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445",
+        didOpen: () => {
+          $("#selectAllBroadcast").addEventListener("click", () => {
+            const all = $$(".broadcast-user");
+            const shouldCheck = all.some(input => !input.checked);
+            all.forEach(input => { input.checked = shouldCheck; });
+          });
+        },
+        preConfirm: () => {
+          const userIds = $$(".broadcast-user:checked").map(input => input.value);
+          if (!userIds.length) return Swal.showValidationMessage("กรุณาเลือกผู้รับอย่างน้อย 1 คน");
+          if (!$("#broadcastTemplate").value) return Swal.showValidationMessage("กรุณาเลือก Flex Template");
+          return {
+            name:$("#broadcastName").value,
+            templateId:$("#broadcastTemplate").value,
+            scheduledAt:$("#broadcastDate").value,
+            userIds
+          };
+        }
+      });
+      if (!result.isConfirmed) return;
+      const template = templates.find(item => item.templateId === result.value.templateId);
+      await callApi("broadcast.create", {
+        name:result.value.name,
+        userIds:result.value.userIds,
+        templateType:"flex",
+        messages:[{
+          type:"flex",
+          altText:template.altText || template.name,
+          contents:template.contents
+        }],
+        scheduledAt:result.value.scheduledAt || ""
+      });
+      notify("สร้าง Broadcast แล้ว");
+      navigate("broadcast");
+    }
+
+    /* -----------------------------------------------------------------------
+       LINE Rich Menu management
+       -------------------------------------------------------------------- */
+
+    async function renderRichMenus(root) {
+      const result = await callApi("richMenus.list");
+      const menus = result.richMenus || [];
+      const rows = menus.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong></td>
+        <td><code>${escapeHtml(item.richMenuLineId)}</code></td>
+        <td>${item.isDefault ? statusBadge("SENT") : "-"}</td>
+        <td>
+          <div class="table-actions">
+            <button class="icon-btn" data-rich-upload="${escapeHtml(item.richMenuLineId)}" title="อัปโหลดภาพ"><i class="fa-regular fa-image"></i></button>
+            <button class="icon-btn" data-rich-default="${escapeHtml(item.richMenuLineId)}" title="ตั้งเป็นค่าเริ่มต้น"><i class="fa-solid fa-star"></i></button>
+            <button class="icon-btn" data-rich-link="${escapeHtml(item.richMenuLineId)}" title="ผูกกับสมาชิก"><i class="fa-solid fa-link"></i></button>
+            <button class="icon-btn" data-rich-unlink="1" title="ยกเลิก Rich Menu ของสมาชิก"><i class="fa-solid fa-link-slash"></i></button>
+            <button class="icon-btn" data-rich-delete="${escapeHtml(item.richMenuLineId)}" title="ลบ"><i class="fa-regular fa-trash-can"></i></button>
+          </div>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">สร้าง Rich Menu, อัปโหลดภาพ และตั้งเป็นเมนูหลักใน LINE OA</span>
+          <button class="btn btn-primary" id="createRichMenu"><i class="fa-solid fa-plus"></i> สร้าง Rich Menu</button>
+        </div>
+        ${panel("Rich Menu", "รายการ Rich Menu ที่สร้างไว้", tableHtml(["ชื่อ","LINE Rich Menu ID","เมนูหลัก","จัดการ"],rows,"ยังไม่มี Rich Menu"))}
+        <div class="notice warning" style="margin-top:13px">หลังสร้าง Rich Menu ต้องอัปโหลดรูปภาพที่มีขนาดตรงกับค่า size ที่กำหนดไว้ และควรตรวจสอบ bounds ของแต่ละ area ก่อนเผยแพร่</div>`;
+      $("#createRichMenu").addEventListener("click", createRichMenuForm);
+      $$("[data-rich-upload]").forEach(button => button.addEventListener("click", () => uploadRichMenuImage(button.dataset.richUpload)));
+      $$("[data-rich-default]").forEach(button => button.addEventListener("click", async () => {
+        await callApi("richMenus.default",{richMenuLineId:button.dataset.richDefault});
+        notify("ตั้งค่า Rich Menu หลักแล้ว");
+        navigate("richmenus");
+      }));
+      $$("[data-rich-link]").forEach(button => button.addEventListener("click", () => linkRichMenuToMember(button.dataset.richLink)));
+      $$("[data-rich-unlink]").forEach(button => button.addEventListener("click", unlinkRichMenuFromMember));
+      $$("[data-rich-delete]").forEach(button => button.addEventListener("click", async () => {
+        if (!(await confirmAction("ลบ Rich Menu?", "คำสั่งนี้จะลบ Rich Menu จาก LINE OA"))) return;
+        await callApi("richMenus.delete",{richMenuLineId:button.dataset.richDelete});
+        notify("ลบ Rich Menu แล้ว");
+        navigate("richmenus");
+      }));
+    }
+
+    async function linkRichMenuToMember(richMenuLineId) {
+      const result = await Swal.fire({
+        title:"ผูก Rich Menu กับสมาชิก",
+        input:"text",
+        inputLabel:"LINE User ID",
+        inputPlaceholder:"Uxxxxxxxxxxxxxxxx",
+        showCancelButton:true,
+        confirmButtonText:"ผูกเมนู",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445",
+        inputValidator:value => value ? undefined : "กรุณาระบุ User ID"
+      });
+      if (!result.isConfirmed) return;
+      await callApi("richMenus.link",{userId:result.value,richMenuLineId});
+      notify("ผูก Rich Menu กับสมาชิกแล้ว");
+    }
+
+    async function unlinkRichMenuFromMember() {
+      const result = await Swal.fire({
+        title:"ยกเลิก Rich Menu ของสมาชิก",
+        input:"text",
+        inputLabel:"LINE User ID",
+        inputPlaceholder:"Uxxxxxxxxxxxxxxxx",
+        showCancelButton:true,
+        confirmButtonText:"ยกเลิกการผูก",
+        cancelButtonText:"ปิด",
+        confirmButtonColor:"#205445",
+        inputValidator:value => value ? undefined : "กรุณาระบุ User ID"
+      });
+      if (!result.isConfirmed) return;
+      await callApi("richMenus.unlink",{userId:result.value});
+      notify("ยกเลิกการผูก Rich Menu แล้ว");
+    }
+
+    async function createRichMenuForm() {
+      const sample = {
+        size:{width:2500,height:1686},
+        selected:true,
+        name:"Main Menu",
+        chatBarText:"เมนูหลัก",
+        areas:[
+          {bounds:{x:0,y:0,width:1250,height:843},action:{type:"message",text:"ดูเมนูอาหาร"}},
+          {bounds:{x:1250,y:0,width:1250,height:843},action:{type:"message",text:"ติดต่อเจ้าหน้าที่"}},
+          {bounds:{x:0,y:843,width:1250,height:843},action:{type:"message",text:"สั่งอาหารล่วงหน้า"}},
+          {bounds:{x:1250,y:843,width:1250,height:843},action:{type:"message",text:"โปรโมชั่น"}}
+        ]
+      };
+      const result = await modalForm("สร้าง Rich Menu", `
+        ${field("ชื่อ Rich Menu","name","Main Menu","text",{full:true,required:true})}
+        ${field("Rich Menu JSON","richMenuJson",JSON.stringify(sample,null,2),"textarea",{full:true,required:true})}
+      `);
+      if (!result) return;
+      const richMenu = parseJson(result.richMenuJson,null);
+      if (!richMenu) return showError(new Error("Rich Menu JSON ไม่ถูกต้อง"));
+      await callApi("richMenus.create",{name:result.name,richMenu});
+      notify("สร้าง Rich Menu ใน LINE แล้ว");
+      navigate("richmenus");
+    }
+
+    async function uploadRichMenuImage(richMenuLineId) {
+      const result = await Swal.fire({
+        title:"อัปโหลดภาพ Rich Menu",
+        html:'<div class="field" style="text-align:left"><label>ไฟล์ภาพ PNG หรือ JPEG</label><input id="richMenuFile" type="file" accept="image/png,image/jpeg"></div>',
+        showCancelButton:true,
+        confirmButtonText:"อัปโหลด",
+        cancelButtonText:"ยกเลิก",
+        confirmButtonColor:"#205445",
+        preConfirm:() => {
+          const file = $("#richMenuFile").files[0];
+          if (!file) return Swal.showValidationMessage("กรุณาเลือกภาพ");
+          return file;
+        }
+      });
+      if (!result.isConfirmed) return;
+      try {
+        Swal.fire({title:"กำลังอัปโหลด",allowOutsideClick:false,didOpen:() => Swal.showLoading()});
+        const base64 = await fileAsDataUrl(result.value);
+        await callApi("richMenus.uploadImage",{
+          richMenuLineId,
+          base64,
+          contentType:result.value.type,
+          name:result.value.name
+        });
+        Swal.close();
+        notify("อัปโหลดภาพ Rich Menu แล้ว");
+      } catch (error) {
+        Swal.close();
+        showError(error);
+      }
+    }
+
+    /* -----------------------------------------------------------------------
+       Staff, groups, reports, logs, database diagnostics and settings
+       -------------------------------------------------------------------- */
+
+    async function renderStaff(root) {
+      const [adminResult, groupResult] = await Promise.all([
+        callApi("admins.list"),
+        callApi("staffGroups.list")
+      ]);
+      const admins = adminResult.admins || [];
+      const groups = groupResult.groups || [];
+      const adminRows = admins.map(item => `<tr>
+        <td><strong>${escapeHtml(item.agentName)}</strong></td>
+        <td>${escapeHtml(item.displayName)}</td>
+        <td>${item.active ? statusBadge("SENT") : statusBadge("PAUSED")}</td>
+        <td>
+          <button class="icon-btn" data-admin-edit="${escapeHtml(item.agentId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-admin-delete="${escapeHtml(item.agentId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      const groupRows = groups.map(item => `<tr>
+        <td><strong>${escapeHtml(item.name)}</strong></td>
+        <td><code>${escapeHtml(item.groupId)}</code></td>
+        <td>${item.isDefault ? statusBadge("SENT") : "-"}</td>
+        <td>
+          <button class="icon-btn" data-group-edit="${escapeHtml(item.groupId)}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn" data-group-delete="${escapeHtml(item.groupId)}"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="grid grid-2">
+          ${panel("พนักงาน / ผู้ให้บริการ", "ชื่อที่ใช้แทนตัวแปร {{agent_name}} ในข้อความส่งต่อ", `
+            <div class="toolbar-right" style="margin-bottom:10px">
+              <button class="btn btn-primary btn-small" id="addAdmin"><i class="fa-solid fa-plus"></i> เพิ่มพนักงาน</button>
+            </div>
+            ${tableHtml(["ชื่อผู้ให้บริการ","ชื่อแสดงผล","สถานะ","จัดการ"],adminRows,"ยังไม่มีรายชื่อพนักงาน")}
+          `)}
+          ${panel("กลุ่ม LINE พนักงาน", "Group ID สำหรับแจ้งเตือนออเดอร์และคำขอ Handover", `
+            <div class="toolbar-right" style="margin-bottom:10px">
+              <button class="btn btn-primary btn-small" id="addGroup"><i class="fa-solid fa-plus"></i> เพิ่มกลุ่ม LINE</button>
+            </div>
+            ${tableHtml(["ชื่อกลุ่ม","Group ID","กลุ่มหลัก","จัดการ"],groupRows,"ยังไม่มีกลุ่มพนักงาน")}
+          `)}
+        </div>
+        <div class="notice warning" style="margin-top:14px">LINE OA ต้องเข้าร่วมกลุ่มพนักงานและเปิดสิทธิ์ให้บอทเข้ากลุ่มก่อน จึงจะส่ง Flex แจ้งออเดอร์หรือคำขอเจ้าหน้าที่ได้</div>`;
+      $("#addAdmin").addEventListener("click", () => editAdmin());
+      $("#addGroup").addEventListener("click", () => editGroup());
+      $$("[data-admin-edit]").forEach(button => button.addEventListener("click", () => {
+        editAdmin(admins.find(item => item.agentId === button.dataset.adminEdit));
+      }));
+      $$("[data-admin-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("admins.delete",{agentId:button.dataset.adminDelete},"ลบพนักงานคนนี้?");
+      }));
+      $$("[data-group-edit]").forEach(button => button.addEventListener("click", () => {
+        editGroup(groups.find(item => item.groupId === button.dataset.groupEdit));
+      }));
+      $$("[data-group-delete]").forEach(button => button.addEventListener("click", () => {
+        deleteRecord("staffGroups.delete",{groupId:button.dataset.groupDelete},"ลบกลุ่ม LINE นี้?");
+      }));
+    }
+
+    async function editAdmin(item = {}) {
+      const result = await modalForm("ข้อมูลพนักงาน", `
+        ${field("รหัสพนักงาน (ไม่บังคับ)","agentId",item.agentId || "")}
+        ${field("ชื่อผู้ให้บริการ","agentName",item.agentName || "","text",{full:true,required:true})}
+        ${field("ชื่อแสดงผล","displayName",item.displayName || item.agentName || "","text",{full:true})}
+        <div class="field full">${checkbox("เปิดใช้งาน","active",item.active !== false)}</div>
+      `);
+      if (!result) return;
+      await callApi("admins.save",result);
+      notify("บันทึกข้อมูลพนักงานแล้ว");
+      navigate("staff");
+    }
+
+    async function editGroup(item = {}) {
+      const result = await modalForm("กลุ่ม LINE พนักงาน", `
+        ${field("Group ID","groupId",item.groupId || "","text",{full:true,required:true})}
+        ${field("ชื่อกลุ่ม","name",item.name || "กลุ่มพนักงาน","text",{full:true,required:true})}
+        <div class="field full">${checkbox("กำหนดเป็นกลุ่มแจ้งเตือนหลัก","isDefault",Boolean(item.isDefault))}</div>
+        <div class="field full">${checkbox("เปิดใช้งาน","active",item.active !== false)}</div>
+      `);
+      if (!result) return;
+      await callApi("staffGroups.save",{
+        groupId:result.groupId,
+        name:result.name,
+        isDefault:Boolean(result.isDefault),
+        active:Boolean(result.active)
+      });
+      notify("บันทึกกลุ่ม LINE แล้ว");
+      navigate("staff");
+    }
+
+    async function renderReports(root) {
+      const result = await callApi("reports.get");
+      const summary = result.summary || {};
+      const cards = [
+        ["ออเดอร์สะสม",summary.orders,"fa-receipt"],
+        ["ยอดขายสะสม",money(summary.revenue),"fa-coins"],
+        ["ข้อความจาก AI",summary.aiMessages,"fa-robot"],
+        ["ข้อความจากแอดมิน",summary.adminMessages,"fa-user-tie"]
+      ];
+      const rows = (result.metrics || []).map(item => `<tr>
+        <td>${escapeHtml(item.date)}</td>
+        <td>${escapeHtml(item.metric)}</td>
+        <td>${escapeHtml(item.value)}</td>
+        <td>${dateTime(item.updatedAt)}</td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="grid grid-4">
+          ${cards.map(item => `<div class="stat-card">
+            <div><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1] ?? 0}</div></div>
+            <div class="stat-icon"><i class="fa-solid ${item[2]}"></i></div>
+          </div>`).join("")}
+        </div>
+        <div style="margin-top:15px">
+          ${panel("Analytics Metrics", "ค่าตัวชี้วัดที่ Backend บันทึกในแท็บ ANALYTICS", tableHtml(
+            ["วันที่","Metric","Value","อัปเดต"],rows,"ยังไม่มีข้อมูล Analytics"
+          ))}
+        </div>
+        <div class="notice warning" style="margin-top:13px">Reports API ใน Code.gs ปัจจุบันให้ข้อมูลสรุปยอดสะสมและ Metrics ในชีต ANALYTICS ยังไม่มี API กรองช่วงวันที่หรือข้อมูลกราฟรายวันแบบละเอียด</div>`;
+    }
+
+    async function renderLogs(root) {
+      const result = await callApi("logs.list",{limit:250});
+      const logs = result.logs || [];
+      const rows = logs.map(item => `<tr>
+        <td>${dateTime(item.createdAt)}</td>
+        <td>${statusBadge(item.level)}</td>
+        <td>${escapeHtml(item.module)}</td>
+        <td>${escapeHtml(item.message)}</td>
+        <td><button class="icon-btn" data-log-view="${escapeHtml(item.logId)}"><i class="fa-regular fa-eye"></i></button></td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="page-toolbar">
+          <span class="small muted">แสดงรายการบันทึกล่าสุด ${logs.length} รายการ</span>
+          <button class="btn btn-secondary" id="refreshLogs"><i class="fa-solid fa-rotate"></i> รีเฟรช</button>
+        </div>
+        ${panel("System Logs", "ตรวจสอบ API Error, Webhook, Automation และงานเบื้องหลัง",
+          tableHtml(["เวลา","ระดับ","โมดูล","ข้อความ","รายละเอียด"],rows,"ยังไม่มี Log"))}`;
+      $("#refreshLogs").addEventListener("click", () => navigate("logs"));
+      $$("[data-log-view]").forEach(button => button.addEventListener("click", () => {
+        const item = logs.find(log => log.logId === button.dataset.logView);
+        Swal.fire({
+          title:"รายละเอียด Log",
+          width:760,
+          html:`<pre style="text-align:left;white-space:pre-wrap;max-height:60vh;overflow:auto">${escapeHtml(JSON.stringify(item,null,2))}</pre>`
+        });
+      }));
+    }
+
+    async function renderDatabase(root) {
+      const result = await callApi("database.diagnostics");
+      const rows = (result.sheets || []).map(sheet => `<tr>
+        <td><strong>${escapeHtml(sheet.name)}</strong></td>
+        <td>${sheet.exists ? statusBadge("SENT") : statusBadge("FAILED")}</td>
+        <td>${sheet.rows || 0}</td>
+        <td>${sheet.columns || 0}</td>
+      </tr>`);
+      root.innerHTML = `
+        <div class="notice">ฐานข้อมูลของระบบใช้ Google Spreadsheet เพียงไฟล์เดียว โดย Code.gs มีฟังก์ชัน setupSystem() สำหรับสร้าง Spreadsheet, แท็บ และหัวตารางอัตโนมัติ</div>
+        <div style="margin-top:15px">
+          ${panel("Google Sheets Database", "สถานะและรายละเอียดแท็บข้อมูล", `
+            ${result.spreadsheetUrl ? `<p><a class="btn btn-secondary" href="${escapeHtml(result.spreadsheetUrl)}" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> เปิด Spreadsheet</a></p>` : ""}
+            ${tableHtml(["ชื่อแท็บ","สถานะ","จำนวนแถวข้อมูล","จำนวนคอลัมน์"],rows,"ยังไม่มีข้อมูลแท็บ")}
+          `)}
+        </div>
+        <div class="notice warning" style="margin-top:14px">การสร้างฐานข้อมูลให้รัน setupSystem() ใน Apps Script Editor และอนุญาตสิทธิ์ที่ระบบร้องขอ เมนูนี้เป็นหน้าตรวจสอบ ไม่ได้สั่งล้างหรือสร้างตารางใหม่</div>`;
+    }
+
+    async function renderSettings(root) {
+      const [settings,status] = await Promise.all([
+        callApi("settings.get"),
+        callApi("system.status")
+      ]);
+      root.innerHTML = `
+        <div class="grid grid-2">
+          ${panel("ข้อมูลร้าน", "ข้อมูลพื้นฐานที่ใช้ในข้อความและการจัดการออเดอร์", `
+            <form id="settingsForm" class="form-grid">
+              ${field("ชื่อร้าน","restaurantName",settings.restaurantName || "ก๋วยเตี๋ยวโบราณ by เจ๊อ้น","text",{full:true})}
+              ${field("เบอร์โทรศัพท์","restaurantPhone",settings.restaurantPhone || "0626590910")}
+              ${field("เวลาทำการ","businessHours",settings.businessHours || "")}
+              ${field("URL เมนูออนไลน์","publicMenuUrl",settings.publicMenuUrl || "","url",{full:true})}
+              ${field("ชื่อเจ้าหน้าที่เริ่มต้น","defaultAgentName",settings.defaultAgentName || "Ponlabat")}
+              <div class="notice" style="grid-column:1/-1"><strong>AI หลัก:</strong> xAI Grok 4.7 · <strong>AI สำรอง:</strong> Google Gemini</div>
+              ${field("Grok Model (หลัก)","grokModel",settings.grokModel || "grok-4.7")}
+              ${field("Gemini Model (สำรอง)","geminiModel",settings.geminiModel || "gemini-3.8-flash")}
+              <div class="field full">${checkbox("เปิด AI","aiEnabled",settings.aiEnabled !== false)}</div>
+              <div class="field full">${checkbox("เปิดระบบรับออเดอร์","orderEnabled",settings.orderEnabled !== false)}</div>
+              <div class="field full">${checkbox("ต้องให้ลูกค้ายืนยันก่อนสร้างออเดอร์","orderRequireConfirmation",settings.orderRequireConfirmation !== false)}</div>
+              <div class="field full">${checkbox("เปิดระบบ Broadcast","broadcastEnabled",settings.broadcastEnabled !== false)}</div>
+              <div class="field full"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลร้าน</button></div>
+            </form>
+          `)}
+          ${panel("การเชื่อมต่อ GitHub ↔ Apps Script", "หน้าเว็บอยู่บน GitHub ส่วน Code.gs ให้บริการ API แยกต่างหาก", `
+            <div class="small muted">API URL ที่บันทึกในเบราว์เซอร์นี้</div>
+            <div style="word-break:break-all;margin:6px 0 11px"><code>${escapeHtml(getApiEndpoint() || "ยังไม่ได้ตั้งค่า")}</code></div>
+            <div class="toolbar-right">
+              <button class="btn btn-secondary btn-small" id="settingsEditApi"><i class="fa-solid fa-link"></i> ตั้งค่า API URL</button>
+              <button class="btn btn-secondary btn-small" id="viewWebhookInstructions"><i class="fa-solid fa-book"></i> คำแนะนำ Webhook</button>
+            </div>
+            <div class="field-help" style="margin-top:8px">API URL และ API Key เก็บไว้ใน Local Storage ของเบราว์เซอร์ ไม่ได้ฝังในไฟล์ GitHub</div>
+          `)}
+          ${panel("สถานะบริการภายนอก", "Secret และ API Key ต้องตั้งค่าใน Script Properties", `
+            ${[
+              ["Google Sheets",status.databaseReady],
+              ["LINE Access Token",status.lineConfigured],
+              ["xAI API Key (Grok ตัวหลัก)",status.grokConfigured],
+              ["Gemini API Key (โมเดลสำรอง)",status.geminiConfigured],
+              ["ImgBB API Key",status.imgbbConfigured],
+              ["Webhook Secret",status.webhookSecretConfigured]
+            ].map(item => `<div class="check-row" style="margin:10px 0">
+              <i class="fa-solid ${item[1] ? "fa-circle-check" : "fa-circle-xmark"}" style="color:${item[1] ? "#27845d" : "#b84848"}"></i>
+              <span>${item[0]}</span><strong style="margin-left:auto">${item[1] ? "ตั้งค่าแล้ว" : "ยังไม่ตั้งค่า"}</strong>
+            </div>`).join("")}
+            <div class="divider"></div>
+            <button class="btn btn-secondary" id="settingsTestLine"><i class="fa-brands fa-line"></i> ทดสอบ LINE</button>
+            <button class="btn btn-primary" id="settingsTestAI"><i class="fa-solid fa-wand-magic-sparkles"></i> ทดสอบ AI หลัก/สำรอง</button>
+            <button class="btn btn-secondary" id="settingsTestGrok"><i class="fa-solid fa-robot"></i> ทดสอบ Grok</button>
+            <button class="btn btn-secondary" id="settingsTestGemini"><i class="fa-solid fa-robot"></i> ทดสอบ Gemini</button>
+            <button class="btn btn-secondary" id="settingsTestImgBB"><i class="fa-regular fa-image"></i> ทดสอบ ImgBB</button>
+          `)}
+        </div>
+        <div class="notice warning" style="margin-top:14px">
+          ห้ามใส่ xAI API Key, Gemini API Key, LINE Channel Access Token, ImgBB API Key หรือ Webhook Secret ใน HTML หรือ GitHub
+          ให้บันทึกค่าดังกล่าวใน Apps Script → Project Settings → Script Properties เท่านั้น
+        </div>
+        <div class="notice warning" style="margin-top:10px">
+          Dashboard ไม่มีระบบล็อกอินตามข้อกำหนดเดิม ไม่ควรเผยแพร่ URL ผู้ดูแลแบบสาธารณะ ควรจำกัดผู้มีสิทธิ์เข้าถึง Web App
+          และควรมี Proxy ตรวจสอบ LINE x-line-signature ก่อนส่ง Webhook เข้า Apps Script ในระบบ Production
+        </div>`;
+      $("#settingsForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        await callApi("settings.save",formValues(event.currentTarget));
+        notify("บันทึกข้อมูลร้านแล้ว");
+      });
+      $("#settingsTestLine").addEventListener("click", () => testService("system.testLine"));
+      $("#settingsTestAI").addEventListener("click", () => testService("system.testAI"));
+      $("#settingsTestGrok").addEventListener("click", () => testService("system.testGrok"));
+      $("#settingsTestGemini").addEventListener("click", () => testService("system.testGemini"));
+      $("#settingsTestImgBB").addEventListener("click", () => testService("system.testImgBB"));
+      $("#settingsEditApi").addEventListener("click", () => configureApiConnection(true));
+      $("#viewWebhookInstructions").addEventListener("click", async () => {
+        try {
+          const instructions = await callApi("system.webhookInstructions");
+          Swal.fire({
+            title:"Webhook และ API Setup",
+            width:820,
+            html:`
+              <div style="text-align:left">
+                <div class="field"><label>Dashboard API URL</label><textarea class="control" readonly>${escapeHtml(instructions.apiUrl || "")}</textarea></div>
+                <div class="field" style="margin-top:10px"><label>LINE Webhook URL</label><textarea class="control" readonly>${escapeHtml(instructions.webhookUrl || "")}</textarea></div>
+                <ol style="text-align:left;padding-left:22px;margin-top:12px">${(instructions.steps || []).map(step => `<li style="margin:6px 0">${escapeHtml(step)}</li>`).join("")}</ol>
+              </div>`,
+            confirmButtonText:"ปิด",
+            confirmButtonColor:"#205445"
+          });
+        } catch (error) { showError(error); }
+      });
+    }
+
+    /* -----------------------------------------------------------------------
+       Page registry and global event handling
+       -------------------------------------------------------------------- */
+
+    const PAGE_RENDERERS = {
+      dashboard:renderDashboard,
+      ai:renderAi,
+      prompts:renderPrompts,
+      knowledge:renderKnowledge,
+      faq:renderFaq,
+      playground:renderPlayground,
+      welcome:renderWelcome,
+      flex:renderFlex,
+      members:renderMembers,
+      chat:renderChat,
+      handover:renderHandover,
+      broadcast:renderBroadcast,
+      menu:renderMenu,
+      images:renderImages,
+      orders:renderOrders,
+      keywords:renderKeywords,
+      automations:renderAutomations,
+      flow:renderFlow,
+      richmenus:renderRichMenus,
+      staff:renderStaff,
+      reports:renderReports,
+      logs:renderLogs,
+      database:renderDatabase,
+      settings:renderSettings
+    };
+
+    $$(".nav-link").forEach(button => {
+      button.addEventListener("click", () => navigate(button.dataset.page));
+    });
+
+    $("#mobileMenu").addEventListener("click", () => {
+      $("#sidebar").classList.add("open");
+      $("#mobileBackdrop").classList.add("visible");
+    });
+
+    $("#mobileBackdrop").addEventListener("click", () => {
+      $("#sidebar").classList.remove("open");
+      $("#mobileBackdrop").classList.remove("visible");
+    });
+
+    $("#refreshButton").addEventListener("click", () => navigate(state.page));
+    $("#apiConfigButton").addEventListener("click", () => configureApiConnection(true));
+
+    window.addEventListener("unhandledrejection", event => {
+      console.error("Unhandled dashboard error:", event.reason);
+      showError(event.reason || new Error("เกิดข้อผิดพลาดที่ไม่คาดคิด"));
+      event.preventDefault();
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if (state.chatRefreshTimer) clearInterval(state.chatRefreshTimer);
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!getApiEndpoint()) {
+        renderApiSetupRequired();
+        await configureApiConnection(true);
+        return;
+      }
+      try {
+        const status = await callApi("system.status", {}, {timeoutMs:60000});
+        if (status.databaseReady) navigate("dashboard");
+        else renderDatabaseSetupRequired();
+      } catch (error) {
+        renderApiSetupRequired();
+        showError(error);
+      }
+    });
+  </script>
+</body>
+</html>
